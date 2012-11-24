@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NServiceStub", "NServiceStub\NServiceStub.csproj", "{B24E371A-F99C-4B6D-AB8D-54BD3292E5C8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NServiceStub.Testing", "NServiceStub.Testing\NServiceStub.Testing.csproj", "{87018AA5-8DF3-445B-AB0D-02AB4E11FE6F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NServiceStub.NServiceBus", "NServiceStub.NServiceBus\NServiceStub.NServiceBus.csproj", "{9C39FD68-73A4-4751-A5D1-E8C14E49DB30}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B24E371A-F99C-4B6D-AB8D-54BD3292E5C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B24E371A-F99C-4B6D-AB8D-54BD3292E5C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B24E371A-F99C-4B6D-AB8D-54BD3292E5C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B24E371A-F99C-4B6D-AB8D-54BD3292E5C8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{87018AA5-8DF3-445B-AB0D-02AB4E11FE6F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{87018AA5-8DF3-445B-AB0D-02AB4E11FE6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87018AA5-8DF3-445B-AB0D-02AB4E11FE6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{87018AA5-8DF3-445B-AB0D-02AB4E11FE6F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C39FD68-73A4-4751-A5D1-E8C14E49DB30}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C39FD68-73A4-4751-A5D1-E8C14E49DB30}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C39FD68-73A4-4751-A5D1-E8C14E49DB30}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C39FD68-73A4-4751-A5D1-E8C14E49DB30}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
