@@ -4,7 +4,7 @@ using NServiceStub.NServiceBus;
 using NUnit.Framework;
 using OrderService.Contracts;
 
-namespace NServiceStub.IntegrationTests
+namespace NServiceStub.IntegrationTests.NServiceBus
 {
     [TestFixture]
     public class MessagePickerTests

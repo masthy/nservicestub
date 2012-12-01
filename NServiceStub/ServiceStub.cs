@@ -16,21 +16,26 @@ namespace NServiceStub
             Queue = queueName;
             MessageStuffer = _stufferFactory.Create();
             MessagePicker = _messagePickerFactory.Create();
-            Sequences = new List<MessageSequence>();
+            Sequences = new List<IMessageSequence>();
+        }
+
+        public void AddSequence(IMessageSequence sequence)
+        {
+            Sequences.Add(sequence);
         }
 
         public void Begin()
         {
-            var executingSequences = new List<MessageSequence>();
+            var executingSequences = new List<IMessageSequence>();
             executingSequences.AddRange(Sequences);
             var executionContext = new SequenceExecutionContext(executingSequences, Queue, MessagePicker);
 
-            IList<MessageSequence> doneSequences = new List<MessageSequence>();
+            IList<IMessageSequence> doneSequences = new List<IMessageSequence>();
             while (executingSequences.Count > 0)
             {
                 doneSequences.Clear();
 
-                foreach (MessageSequence sequence in executingSequences)
+                foreach (IMessageSequence sequence in executingSequences)
                 {
                     sequence.ExecuteNextStep(executionContext);
 
@@ -38,7 +43,7 @@ namespace NServiceStub
                         doneSequences.Add(sequence);
                 }
 
-                foreach (MessageSequence messageSequence in doneSequences)
+                foreach (IMessageSequence messageSequence in doneSequences)
                 {
                     executingSequences.Remove(messageSequence);
                 }
@@ -53,13 +58,19 @@ namespace NServiceStub
             return new MessageSequenceConfiguration(this, messageSequence);
         }
 
+        public IMessagePicker MessagePicker { get; set; }
+
+        public IMessageStuffer MessageStuffer { get; set; }
+
+        public string Queue { get; set; }
+
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
 
-        private IList<MessageSequence> Sequences { get; set; }
+        private IList<IMessageSequence> Sequences { get; set; }
 
         protected virtual void Dispose(bool disposing)
         {
@@ -81,12 +92,5 @@ namespace NServiceStub
         {
             Dispose(false);
         }
-
-        public IMessagePicker MessagePicker { get; set; }
-
-        public IMessageStuffer MessageStuffer { get; set; }
-
-        public string Queue { get; set; }
-
     }
 }

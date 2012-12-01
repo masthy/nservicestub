@@ -21,8 +21,5 @@ namespace NServiceStub
             _stuffer.PutMessageOnQueue(_msgInitializer, _destinationQueue);
         }
 
-        public IExpectation Expectation { get; set; }
-
-        ISender ISender.Sender { get; set; }
     }
 }

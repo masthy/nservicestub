@@ -5,9 +5,9 @@ namespace NServiceStub.Configuration
     public class SendMessageExpectedNumberOfTimesConfiguration
     {
         private readonly ServiceStub _componentBeingConfigured;
-        private readonly MessageSequence _sequenceBeingConfigured;
+        private readonly IStepConfigurableMessageSequence _sequenceBeingConfigured;
 
-        public SendMessageExpectedNumberOfTimesConfiguration(ServiceStub componentBeingConfigured, MessageSequence sequenceBeingConfigured)
+        public SendMessageExpectedNumberOfTimesConfiguration(ServiceStub componentBeingConfigured, IStepConfigurableMessageSequence sequenceBeingConfigured)
         {
             _componentBeingConfigured = componentBeingConfigured;
             _sequenceBeingConfigured = sequenceBeingConfigured;

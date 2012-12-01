@@ -5,9 +5,9 @@ namespace NServiceStub.Configuration
     public class ExpectationConfiguration
     {
         private readonly ServiceStub _componentBeingConfigured;
-        private readonly MessageSequence _sequenceBeingConfigured;
+        private readonly IStepConfigurableMessageSequence _sequenceBeingConfigured;
 
-        public ExpectationConfiguration(ServiceStub componentBeingConfigured, MessageSequence sequenceBeingConfigured)
+        public ExpectationConfiguration(ServiceStub componentBeingConfigured, IStepConfigurableMessageSequence sequenceBeingConfigured)
         {
             _componentBeingConfigured = componentBeingConfigured;
             _sequenceBeingConfigured = sequenceBeingConfigured;

@@ -1,3 +1,5 @@
+using Castle.MicroKernel.Registration;
+using Castle.Windsor;
 using NServiceBus;
 
 namespace OrderService 
@@ -10,8 +12,11 @@ namespace OrderService
     {
         public void Init()
         {
+            var container = new WindsorContainer();
+            container.Register(Component.For<IWindsorContainer>().Instance(container));
+
             Configure.With()
-                .CastleWindsorBuilder()
+                .CastleWindsorBuilder(container)
                 .XmlSerializer()
                 .MsmqTransport()
                 .RavenSubscriptionStorage()

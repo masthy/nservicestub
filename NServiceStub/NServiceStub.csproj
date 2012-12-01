@@ -50,8 +50,16 @@
       <HintPath>..\packages\Moq.4.0.10827\lib\NET40\Moq.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data.Services" />
+    <Reference Include="System.IdentityModel" />
     <Reference Include="System.Messaging" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ServiceModel.Activation" />
+    <Reference Include="System.ServiceModel.Discovery" />
+    <Reference Include="System.ServiceModel.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -65,7 +73,9 @@
     <Compile Include="Configuration\Helpers.cs" />
     <Compile Include="Configuration\StubConfiguration.cs" />
     <Compile Include="IFactory.cs" />
+    <Compile Include="IMessageSequence.cs" />
     <Compile Include="IStep.cs" />
+    <Compile Include="IStepConfigurableMessageSequence.cs" />
     <Compile Include="RecievedSingleMessage.cs" />
     <Compile Include="Configuration\ExpectationConfiguration.cs" />
     <Compile Include="IExpectation.cs" />
@@ -81,6 +91,7 @@
     <Compile Include="SendMessage.cs" />
     <Compile Include="Configuration\SendMessageExpectedNumberOfTimesConfiguration.cs" />
     <Compile Include="SendMessageNTimes.cs" />
+    <Compile Include="StepChain.cs" />
     <Compile Include="SequenceExecutionContext.cs" />
     <Compile Include="ServiceStub.cs" />
     <Compile Include="ValueComparisonHelper.cs" />

@@ -5,10 +5,10 @@ namespace NServiceStub.Configuration
     public class SenderConfiguration
     {
         private readonly ServiceStub _componentBeingConfigured;
-        private readonly MessageSequence _sequenceBeingConfigured;
+        private readonly IStepConfigurableMessageSequence _sequenceBeingConfigured;
         private readonly SendMessage _lastStep;
 
-        public SenderConfiguration(ServiceStub componentBeingConfigured, MessageSequence sequenceBeingConfigured, SendMessage lastStep)
+        public SenderConfiguration(ServiceStub componentBeingConfigured, IStepConfigurableMessageSequence sequenceBeingConfigured, SendMessage lastStep)
         {
             _componentBeingConfigured = componentBeingConfigured;
             _sequenceBeingConfigured = sequenceBeingConfigured;

@@ -2,10 +2,10 @@
 {
     public class VerifyExpectation : IStep
     {
-        private readonly MessageSequence _owningSequence;
+        private readonly IMessageSequence _owningSequence;
         private readonly IExpectation _expectation;
 
-        public VerifyExpectation(MessageSequence owningSequence, IExpectation expectation)
+        public VerifyExpectation(IMessageSequence owningSequence, IExpectation expectation)
         {            
             _owningSequence = owningSequence;
             _expectation = expectation;
