@@ -1,7 +1,7 @@
 ﻿using NServiceBus;
 using NServiceBus.Unicast;
 
-namespace NServiceStub
+namespace NServiceStub.NServiceBus
 {
     public class InternalBusCreator
     {

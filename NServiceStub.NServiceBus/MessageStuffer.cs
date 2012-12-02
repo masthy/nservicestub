@@ -5,7 +5,7 @@ using NServiceBus;
 using NServiceBus.Unicast;
 using NServiceBus.Unicast.Transport;
 
-namespace NServiceStub
+namespace NServiceStub.NServiceBus
 {
     public class MessageStuffer : IMessageStuffer
     {
