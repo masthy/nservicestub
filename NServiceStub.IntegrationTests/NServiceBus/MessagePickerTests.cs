@@ -32,26 +32,17 @@ namespace NServiceStub.IntegrationTests.NServiceBus
         }
 
         [Test]
-        public void Pick_NoMessageOnQueue_Waits()
+        public void Pick_NoMessageOnQueue_ReturnsNull()
         {
             // Arrange
             var bus = InternalBusCreator.CreateBus();
             var picker = new MessagePicker(bus);
 
             // Act
-            Task readMessage = new Task(obj => ((MessagePicker)obj).PickMessage(@".\Private$\orderservice"), picker);
-
-            readMessage.Start();
-
-            Thread.Sleep(1000);
+            object[] nextMessage = picker.PickMessage(@".\Private$\orderservice");
 
             // Assert
-            bool running = !readMessage.IsCompleted && readMessage.Exception == null;
-
-            MsmqHelpers.PutMessageOnQueue("whatever", "orderservice");
-            while (!readMessage.IsCompleted) {}
-
-            Assert.That(running);
+            Assert.That(nextMessage, Is.Null);
         }
 
     }

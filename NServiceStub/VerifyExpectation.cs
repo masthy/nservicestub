@@ -17,8 +17,18 @@
 
             while (!expectationHasBeenMet)
             {
-                expectationHasBeenMet = _expectation.Met(context.GetNextMessage(_owningSequence));
+                expectationHasBeenMet = TestExpectationIfAnyMessageOnQueue(context);
             }
+        }
+
+        public bool TestExpectationIfAnyMessageOnQueue(SequenceExecutionContext context)
+        {
+            object[] nextMessage = context.GetNextMessage(_owningSequence);
+
+            if (nextMessage == null)
+                return false;
+
+            return _expectation.Met(nextMessage);
         }
     }
 }

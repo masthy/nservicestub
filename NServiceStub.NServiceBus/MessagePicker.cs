@@ -18,7 +18,8 @@ namespace NServiceStub.NServiceBus
             {
                 using (MessageEnumerator messageEnumerator2 = queue.GetMessageEnumerator2())
                 {
-                    while (!messageEnumerator2.MoveNext()) {}
+                    if (!messageEnumerator2.MoveNext())
+                        return null;
 
                     Message current = messageEnumerator2.Current;
                     messageEnumerator2.RemoveCurrent();

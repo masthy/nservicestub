@@ -1,7 +1,5 @@
-﻿using System.Linq;
-using System.ServiceModel;
+﻿using System.ServiceModel;
 using System.Threading;
-using System.Threading.Tasks;
 using NServiceStub.Configuration;
 using NServiceStub.NServiceBus;
 using NServiceStub.WCF;
@@ -25,8 +23,7 @@ namespace NServiceStub.IntegrationTests.WCF
             proxy.Setup(s => s.PlaceOrder(Parameter.Equals<string>(str => str == "dope"))).Returns(() => true)
                .Send<IOrderWasPlaced>(service, msg => msg.OrderedProduct = "stockings", "shippingservice");
 
-            var startServiceAsync = new Task(service.Begin);
-            startServiceAsync.Start();
+            service.Start();
 
             bool firstRequestReturnValue;
             bool secondRequestReturnValue;

@@ -24,7 +24,10 @@ namespace NServiceStub
         public object[] GetNextMessage(IMessageSequence requestor)
         {
             if (_messageBuffer[requestor].Count == 0)
-                BufferUpANewMessage();
+            {
+                if (!BufferUpANewMessage())
+                    return null;
+            }
 
             return _messageBuffer[requestor].Dequeue();
         }
@@ -39,12 +42,17 @@ namespace NServiceStub
             _currentStep[requestor] = current;
         }
 
-        private void BufferUpANewMessage()
+        private bool BufferUpANewMessage()
         {
             object[] nextMessage = _picker.PickMessage(_queue);
 
+            if (nextMessage == null)
+                return false;
+
             foreach (Queue<object[]> buffer in _messageBuffer.Values)
                 buffer.Enqueue(nextMessage);
+
+            return true;
         }
 
         private void InitializeCurrentSteps(IEnumerable<IMessageSequence> sequencesToExecute)
