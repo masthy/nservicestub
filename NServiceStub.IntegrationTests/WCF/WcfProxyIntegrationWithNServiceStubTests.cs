@@ -1,4 +1,5 @@
-﻿using System.ServiceModel;
+﻿using System.Linq;
+using System.ServiceModel;
 using System.Threading;
 using System.Threading.Tasks;
 using NServiceStub.Configuration;
@@ -46,8 +47,7 @@ namespace NServiceStub.IntegrationTests.WCF
             Assert.That(secondRequestReturnValue, Is.False);
             Assert.That(MsmqHelpers.GetMessageCount("shippingservice"), Is.EqualTo(1), "shipping service did not recieve send");
         }
-
     }
 
-    
+
 }

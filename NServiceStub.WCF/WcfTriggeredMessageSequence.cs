@@ -5,30 +5,38 @@ namespace NServiceStub.WCF
     public class WcfTriggeredMessageSequence : IStepConfigurableMessageSequence
     {
         private readonly StepChain _sequenceOfEvents = new StepChain();
-
-        readonly List<IStep> _currentSequenceExecutions = new List<IStep>();
+        private readonly List<IStep> _currentSequenceExecutions = new List<IStep>();
+        private readonly object _currentSequenceExecutionsLock = new object();
 
         public void ExecuteNextStep(SequenceExecutionContext executionContext)
         {
-            var currentSteps = new List<IStep>(_currentSequenceExecutions);
+            List<IStep> currentSteps;
+            lock (_currentSequenceExecutionsLock)
+            {
+                currentSteps = new List<IStep>(_currentSequenceExecutions);
+            }
+
             foreach (var currentStep in currentSteps)
             {
                 currentStep.Execute(executionContext);
             }
 
-            int index = 0;
-
-            foreach (var currentStep in currentSteps)
+            lock(_currentSequenceExecutionsLock)
             {
-                IStep next = _sequenceOfEvents.GetStepAfter(currentStep);
+                int index = 0;
 
-                if (next != null)
-                    _currentSequenceExecutions[index] = next;
-                else
-                    _currentSequenceExecutions.Remove(currentStep);
-                index++;
+                foreach (var currentStep in currentSteps)
+                {
+                    IStep next = _sequenceOfEvents.GetStepAfter(currentStep);
+
+                    if (next != null)
+                        _currentSequenceExecutions[index] = next;
+                    else
+                        _currentSequenceExecutions.Remove(currentStep);
+                    index++;
+                }
+                
             }
-
         }
 
         public void TriggerNewSequenceOfEvents()
@@ -36,7 +44,10 @@ namespace NServiceStub.WCF
             if (_sequenceOfEvents.Root == null)
                 return;
 
-            _currentSequenceExecutions.Add(_sequenceOfEvents.Root);
+            lock(_currentSequenceExecutionsLock)
+            {
+                _currentSequenceExecutions.Add(_sequenceOfEvents.Root);
+            }
         }
 
         public bool Done { get; set; }
