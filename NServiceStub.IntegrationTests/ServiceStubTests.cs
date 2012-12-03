@@ -1,6 +1,12 @@
-﻿using NServiceBus.Unicast;
+﻿using System.Linq;
+using Castle.Core;
+using Castle.Facilities.TypedFactory.Internal;
+using Castle.MicroKernel;
+using Castle.Windsor.Diagnostics;
+using NServiceBus.Unicast;
 using NServiceStub.Configuration;
 using NServiceStub.NServiceBus;
+using NServiceStub.WCF.Configuration;
 using NUnit.Framework;
 using OrderService.Contracts;
 
@@ -21,7 +27,7 @@ namespace NServiceStub.IntegrationTests
             var stuffer = new MessageStuffer(bus);
             ServiceStub service = Configure.Stub().NServiceBusSerializers().Create(@".\Private$\orderservice");
 
-            service.Configure()
+            service.Setup()
                    .Expect<IPlaceAnOrder>(msg => msg.Product == "stockings")
                    .Send<IOrderWasPlaced>(msg => msg.OrderedProduct = "stockings", "shippingservice")
                    .Send<IOrderWasPlaced>(msg => msg.OrderedProduct = "stockings", "testclient");
@@ -53,7 +59,7 @@ namespace NServiceStub.IntegrationTests
             var stuffer = new MessageStuffer(bus);
             ServiceStub service = Configure.Stub().NServiceBusSerializers().Create(@".\Private$\orderservice");
 
-            service.Configure()
+            service.Setup()
                    .Expect<IPlaceAnOrder>(msg => msg.Product == "stockings")
                    .Send<IOrderWasPlaced>(msg => msg.OrderedProduct = "stockings", "shippingservice")
                    .Send<IOrderWasPlaced>(msg => msg.OrderedProduct = "stockings", "testclient");
@@ -82,7 +88,7 @@ namespace NServiceStub.IntegrationTests
             var stuffer = new MessageStuffer(bus);
             ServiceStub service = Configure.Stub().NServiceBusSerializers().Create(@".\Private$\orderservice");
 
-            service.Configure()
+            service.Setup()
                    .Expect<IPlaceAnOrder>(msg => msg.Product == "stockings")
                    .Send<IOrderWasPlaced>(msg => msg.OrderedProduct = "stockings", "shippingservice");
 
@@ -108,7 +114,7 @@ namespace NServiceStub.IntegrationTests
 
             ServiceStub service = Configure.Stub().NServiceBusSerializers().Create(@".\Private$\orderservice");
 
-            service.Configure()
+            service.Setup()
                    .Send<IOrderWasPlaced>(msg => msg.OrderedProduct = "stockings", "shippingservice");
 
             // Act
@@ -128,9 +134,9 @@ namespace NServiceStub.IntegrationTests
 
             ServiceStub service = Configure.Stub().NServiceBusSerializers().Create(@".\Private$\orderservice");
 
-            service.Configure()
+            service.Setup()
                    .Send<IOrderWasPlaced>(msg => msg.OrderedProduct = "stockings", "shippingservice");
-            service.Configure()
+            service.Setup()
                    .Send<IOrderWasPlaced>(msg => msg.OrderedProduct = "stockings", "shippingservice");
 
             // Act
@@ -150,7 +156,7 @@ namespace NServiceStub.IntegrationTests
 
             ServiceStub service = Configure.Stub().NServiceBusSerializers().Create(@".\Private$\orderservice");
 
-            service.Configure()
+            service.Setup()
                    .Send<IOrderWasPlaced>(msg => msg.OrderedProduct = "stockings", "shippingservice").NumberOfTimes(10);
 
             // Act
@@ -160,6 +166,53 @@ namespace NServiceStub.IntegrationTests
 
             // Assert
             Assert.That(MsmqHelpers.GetMessageCount("shippingservice"), Is.EqualTo(10), "shipping service did not recieve send");
+        }
+
+        [Test]
+        public void Dispose_DisposingWithNServiceBusSerializer_NoTransientsLyingAround()
+        {
+            // Arrange
+            StubConfiguration configuration = Configure.Stub();
+            ServiceStub service = configuration.NServiceBusSerializers().Create(@".\Private$\orderservice");
+            
+            // Act
+            service.Dispose();
+
+            // Assert
+            AssertThatNoTransientsAreLyingAround(configuration);
+        }
+
+        [Test]
+        public void Dispose_DisposingWithNServiceBusSerializerAndWcfEndPoint_NoTransientsLyingAround()
+        {
+            // Arrange
+            StubConfiguration configuration = Configure.Stub();
+            ServiceStub service = configuration.NServiceBusSerializers().WcfEndPoints().Create(@".\Private$\orderservice");
+
+            service.EndPoint<IOrderService>("http://localhost:9202/orderservice");
+
+            // Act
+            service.Dispose();
+
+            // Assert
+            AssertThatNoTransientsAreLyingAround(configuration);
+        }
+
+        private static void AssertThatNoTransientsAreLyingAround(StubConfiguration configuration)
+        {
+            var diagnostics = configuration.Container.Kernel.GetSubSystem(SubSystemConstants.DiagnosticsKey) as IDiagnosticsHost;
+            var diagnostic = diagnostics.GetDiagnostic<ITrackedComponentsDiagnostic>();
+
+            ILookup<IHandler, object> handlers = diagnostic.Inspect();
+
+            foreach (var handler in handlers)
+            {
+                if (handler.Key.ComponentModel.LifestyleType != LifestyleType.Singleton &&
+                    !typeof(TypedFactoryInterceptor).IsAssignableFrom(handler.Key.ComponentModel.Implementation))
+                {
+                    Assert.Fail("Component {0} is still hanging in there after dispose", handler.Key.ComponentModel.Implementation);
+                }
+            }
         }
 
         private static void StopService(ServiceStub service)

@@ -10,6 +10,7 @@ namespace NServiceStub.Configuration
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
             container.Register(Component.For(typeof(IFactory<>)).AsFactory());
+            container.Register(Component.For<IIExtensionBoundToStubLifecycleFactory>().AsFactory());
         }
     }
 }

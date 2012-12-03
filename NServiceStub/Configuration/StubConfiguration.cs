@@ -13,7 +13,7 @@ namespace NServiceStub.Configuration
 
         public ServiceStub Create(string queueName)
         {
-            return new ServiceStub(queueName, _container.Resolve<IFactory<IMessageStuffer>>(), _container.Resolve<IFactory<IMessagePicker>>());
+            return new ServiceStub(queueName, _container.Resolve<IFactory<IMessageStuffer>>(), _container.Resolve<IFactory<IMessagePicker>>(), _container.Resolve<IIExtensionBoundToStubLifecycleFactory>());
         }
 
         public IWindsorContainer Container

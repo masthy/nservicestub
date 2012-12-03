@@ -3,6 +3,7 @@ using System.Threading;
 using NServiceStub.Configuration;
 using NServiceStub.NServiceBus;
 using NServiceStub.WCF;
+using NServiceStub.WCF.Configuration;
 using NUnit.Framework;
 using OrderService.Contracts;
 
@@ -16,9 +17,11 @@ namespace NServiceStub.IntegrationTests.WCF
         {
             MsmqHelpers.Purge("shippingservice");
 
-            var proxy = new WcfProxy<IOrderService>("http://localhost:9101/orderservice");
+            //var proxy = new WcfProxy<IOrderService>("http://localhost:9101/orderservice");
 
-            var service = Configure.Stub().NServiceBusSerializers().Create(@".\Private$\orderservice");
+            var service = Configure.Stub().NServiceBusSerializers().WcfEndPoints().Create(@".\Private$\orderservice");
+
+            var proxy = service.EndPoint<IOrderService>("http://localhost:9101/orderservice");
 
             proxy.Setup(s => s.PlaceOrder(Parameter.Equals<string>(str => str == "dope"))).Returns(() => true)
                .Send<IOrderWasPlaced>(service, msg => msg.OrderedProduct = "stockings", "shippingservice");

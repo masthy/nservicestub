@@ -7,24 +7,37 @@ namespace NServiceStub
 {
     public class ServiceStub : IDisposable
     {
+        private readonly IIExtensionBoundToStubLifecycleFactory _extensionsFactory;
         private IFactory<IMessagePicker> _messagePickerFactory;
 
         private Task _runningTask;
         private IFactory<IMessageStuffer> _stufferFactory;
 
-        public ServiceStub(string queueName, IFactory<IMessageStuffer> stufferFactory, IFactory<IMessagePicker> messagePickerFactory)
+        public ServiceStub(string queueName, IFactory<IMessageStuffer> stufferFactory, IFactory<IMessagePicker> messagePickerFactory, IIExtensionBoundToStubLifecycleFactory extensionsFactory)
         {
             _stufferFactory = stufferFactory;
             _messagePickerFactory = messagePickerFactory;
+            _extensionsFactory = extensionsFactory;
             Queue = queueName;
             MessageStuffer = _stufferFactory.Create();
             MessagePicker = _messagePickerFactory.Create();
             Sequences = new List<IMessageSequence>();
+            Extensions = _extensionsFactory.Resolve();
         }
 
         public void AddSequence(IMessageSequence sequence)
         {
             Sequences.Add(sequence);
+        }
+
+        public void RequestStop()
+        {
+            RequestedStop = true;
+        }
+
+        public MessageSequenceConfiguration Setup()
+        {
+            return new MessageSequenceConfiguration(this);
         }
 
         public void Start()
@@ -37,14 +50,11 @@ namespace NServiceStub
             _runningTask.Start();
         }
 
-        public void RequestStop()
-        {
-            RequestedStop = true;
-        }
+        public IExtensionBoundToStubLifecycle[] Extensions { get; set; }
 
-        public MessageSequenceConfiguration Configure()
+        public bool IsRunning
         {
-            return new MessageSequenceConfiguration(this);
+            get { return _runningTask != null && !(_runningTask.IsCompleted || _runningTask.IsCanceled || _runningTask.IsFaulted); }
         }
 
         public IMessagePicker MessagePicker { get; set; }
@@ -59,12 +69,30 @@ namespace NServiceStub
             GC.SuppressFinalize(this);
         }
 
-        public bool IsRunning
-        {
-            get { return _runningTask != null && !(_runningTask.IsCompleted || _runningTask.IsCanceled || _runningTask.IsFaulted); }
-        }
-
+        protected bool RequestedStop { get; set; }
         private IList<IMessageSequence> Sequences { get; set; }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            _messagePickerFactory.Release(MessagePicker);
+            _stufferFactory.Release(MessageStuffer);
+
+            foreach (var extensionBoundToStubLifecycle in Extensions)
+            {
+                _extensionsFactory.Release(extensionBoundToStubLifecycle);                
+            }
+
+            if (disposing)
+            {
+                _stufferFactory = null;
+                _messagePickerFactory = null;
+                MessageStuffer = null;
+                MessagePicker = null;
+                Queue = null;
+                Sequences = null;
+                Extensions = null;
+            }
+        }
 
         private void RunInternal()
         {
@@ -89,24 +117,6 @@ namespace NServiceStub
                 {
                     executingSequences.Remove(messageSequence);
                 }
-            }
-        }
-
-        protected bool RequestedStop { get; set; }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            _messagePickerFactory.Release(MessagePicker);
-            _stufferFactory.Release(MessageStuffer);
-
-            if (disposing)
-            {
-                _stufferFactory = null;
-                _messagePickerFactory = null;
-                MessageStuffer = null;
-                MessagePicker = null;
-                Queue = null;
-                Sequences = null;
             }
         }
 

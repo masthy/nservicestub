@@ -36,6 +36,10 @@
     <Reference Include="Castle.Core">
       <HintPath>..\packages\Castle.Core.3.1.0\lib\net35\Castle.Core.dll</HintPath>
     </Reference>
+    <Reference Include="Castle.Windsor, Version=3.1.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Castle.Windsor.3.1.0\lib\net40\Castle.Windsor.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.ServiceModel" />
@@ -46,7 +50,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configuration\Bootstrapper.cs" />
     <Compile Include="Configuration\SendAfterWcfEventConfiguration.cs" />
+    <Compile Include="IWcfProxyFactory.cs" />
+    <Compile Include="Configuration\NServiceStubExtensions.cs" />
+    <Compile Include="Configuration\SConfiguration.cs" />
     <Compile Include="WcfMessageSequenceTrigger.cs" />
     <Compile Include="WcfTriggeredMessageSequence.cs" />
     <Compile Include="ExpressionTreeParser.cs" />
