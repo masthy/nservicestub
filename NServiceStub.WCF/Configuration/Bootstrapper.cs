@@ -10,7 +10,7 @@ namespace NServiceStub.WCF.Configuration
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
             container.Register(Component.For<IWcfProxyFactory>().AsFactory().Forward<IExtensionBoundToStubLifecycle>().LifeStyle.Transient);
-            container.Register(Component.For<ExpressionTreeParser>());
+            container.Register(Component.For<IExpressionTreeParser>().ImplementedBy<ExpressionTreeParser>());
             container.Register(Component.For(typeof(WcfProxy<>)).LifeStyle.Transient);
         }
     }

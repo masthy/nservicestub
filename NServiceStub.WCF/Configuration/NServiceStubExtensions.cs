@@ -8,7 +8,7 @@ namespace NServiceStub.WCF.Configuration
          {
              IWcfProxyFactory wcfProxyFactory = stub.Extensions.OfType<IWcfProxyFactory>().First();
 
-             return wcfProxyFactory.Create<T>(httpEndpoint);
+             return wcfProxyFactory.Create<T>(httpEndpoint, stub);
          }
     }
 }

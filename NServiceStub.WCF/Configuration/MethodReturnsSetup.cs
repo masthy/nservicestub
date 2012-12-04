@@ -5,11 +5,13 @@ namespace NServiceStub.WCF.Configuration
     public class MethodReturnsSetup<R>
     {
         private readonly IWcfProxy _wcfProxy;
+        private readonly ServiceStub _service;
         private readonly IInvocationMatcher _invocationMatcher;
 
-        public MethodReturnsSetup(IWcfProxy wcfProxy, IInvocationMatcher invocationMatcher)
+        public MethodReturnsSetup(IWcfProxy wcfProxy, ServiceStub service, IInvocationMatcher invocationMatcher)
         {
             _wcfProxy = wcfProxy;
+            _service = service;
             _invocationMatcher = invocationMatcher;
         }
 
@@ -20,7 +22,7 @@ namespace NServiceStub.WCF.Configuration
 
             _wcfProxy.AddInvocation(trigger, result.WrapInUntypedFunc());
 
-            return new SendAfterWcfEventConfiguration(sequence);
+            return new SendAfterWcfEventConfiguration(sequence, _service);
         }
         
     }
