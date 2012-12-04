@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace NServiceStub.WCF
 {
@@ -8,6 +9,8 @@ namespace NServiceStub.WCF
         IInvocationMatcher Parse<T, R>(Expression<Func<T, R>> methodSignatureExpectation);
 
         IInvocationMatcher Parse<T>(Expression<Action<T>> methodSignatureExpectation);
+
+        MethodInfo GetInvokedMethod<T,R>(Expression<Func<T, R>> methodSignatureExpectation);
 
     }
 }

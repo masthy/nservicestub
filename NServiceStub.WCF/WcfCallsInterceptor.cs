@@ -6,7 +6,7 @@ namespace NServiceStub.WCF
 {
     public class WcfCallsInterceptor : IInterceptor
     {
-        readonly Dictionary<IInvocationMatcher, Func<object>> _invocationVersusReturnValue = new Dictionary<IInvocationMatcher, Func<object>>();
+        readonly Dictionary<IInvocationMatcher, IInvocationReturnValueProducer> _invocationVersusReturnValue = new Dictionary<IInvocationMatcher, IInvocationReturnValueProducer>();
 
         public void Intercept(IInvocation invocation)
         {
@@ -14,7 +14,7 @@ namespace NServiceStub.WCF
             {
                 if (matchVsReturnValue.Key.Matches(invocation.Arguments))
                 {
-                    invocation.ReturnValue = matchVsReturnValue.Value();
+                    invocation.ReturnValue = matchVsReturnValue.Value.Produce(invocation.Arguments);
                     return;
                 }
             }
@@ -28,9 +28,9 @@ namespace NServiceStub.WCF
             }
         }
 
-        public void AddInvocation(IInvocationMatcher matcher, Func<object> returnValueProducer)
+        public void AddInvocation(IInvocationMatcher matcher, IInvocationReturnValueProducer returnValueProducer)
         {
-            _invocationVersusReturnValue.Add(matcher, returnValueProducer);            
+            _invocationVersusReturnValue.Add(matcher, returnValueProducer);        
         }
     }
 }

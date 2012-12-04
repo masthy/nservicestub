@@ -69,6 +69,7 @@
     <Compile Include="MsmqHelpers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServiceStubTests.cs" />
+    <Compile Include="WCF\ISomeService.cs" />
     <Compile Include="WCF\WcfProxyIntegrationWithNServiceStubTests.cs" />
     <Compile Include="WCF\WcfTriggeredMessageSequenceTests.cs" />
   </ItemGroup>

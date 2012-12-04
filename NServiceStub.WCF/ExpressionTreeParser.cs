@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace NServiceStub.WCF
 {
@@ -18,6 +19,12 @@ namespace NServiceStub.WCF
             var serviceMethod = methodSignatureExpectation.Body as MethodCallExpression;
 
             return ParseInternal(serviceMethod);
+        }
+
+        public MethodInfo GetInvokedMethod<T, R>(Expression<Func<T, R>> methodSignatureExpectation)
+        {
+            var serviceMethod = methodSignatureExpectation.Body as MethodCallExpression;
+            return serviceMethod.Method;
         }
 
         private static IInvocationMatcher ParseInternal(MethodCallExpression serviceMethod)

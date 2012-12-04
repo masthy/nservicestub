@@ -10,6 +10,5 @@ namespace OrderService.Contracts
 
         [OperationContract]
         void CancelOrder(string product);
-
     }
 }

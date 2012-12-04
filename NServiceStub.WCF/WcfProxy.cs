@@ -70,7 +70,7 @@ namespace NServiceStub.WCF
             var sequence = new WcfTriggeredMessageSequence();
             var trigger = new WcfMessageSequenceTrigger(invocationMatcher, sequence);
 
-            _serviceImplementation.AddInvocation(trigger, () => null);
+            _serviceImplementation.AddInvocation(trigger, new NullReturnValue());
 
             return new SendAfterWcfEventConfiguration(sequence, _service);
         }
@@ -79,7 +79,7 @@ namespace NServiceStub.WCF
         {
             IInvocationMatcher invocationMatcher = _parser.Parse(methodSignatureExpectation);
 
-            return new MethodReturnsSetup<R>(this, _service, invocationMatcher);
+            return new MethodReturnsSetup<R>(this, _service, invocationMatcher, _parser.GetInvokedMethod(methodSignatureExpectation));
         }
 
         public void Dispose()
@@ -87,7 +87,7 @@ namespace NServiceStub.WCF
             _host.Close();
         }
 
-        void IWcfProxy.AddInvocation(IInvocationMatcher matcher, Func<object> returnValueProducer)
+        void IWcfProxy.AddInvocation(IInvocationMatcher matcher, IInvocationReturnValueProducer returnValueProducer)
         {
             _serviceImplementation.AddInvocation(matcher, returnValueProducer);
         }

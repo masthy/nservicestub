@@ -52,9 +52,13 @@
   <ItemGroup>
     <Compile Include="Configuration\Bootstrapper.cs" />
     <Compile Include="Configuration\SendAfterWcfEventConfiguration.cs" />
+    <Compile Include="DelegateReturnValue.cs" />
+    <Compile Include="IInvocationReturnValueProducer.cs" />
     <Compile Include="IWcfProxyFactory.cs" />
     <Compile Include="Configuration\NServiceStubExtensions.cs" />
     <Compile Include="Configuration\SConfiguration.cs" />
+    <Compile Include="MapInputArgumentHeuristic.cs" />
+    <Compile Include="NullReturnValue.cs" />
     <Compile Include="WcfMessageSequenceTrigger.cs" />
     <Compile Include="WcfTriggeredMessageSequence.cs" />
     <Compile Include="ExpressionTreeParser.cs" />
