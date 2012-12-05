@@ -96,6 +96,32 @@ namespace NServiceStub.IntegrationTests.WCF
 
             Assert.That(firstRequestReturnValue, Is.EqualTo("hello"));
         }
+
+        [Test]
+        public void SimpleExpectationSetUp_BindingInputWithMultipleParametersSomeParametersOfTheReturnValue_InvocationValuesArePassedToReturn()
+        {
+            var service = Configure.Stub().NServiceBusSerializers().WcfEndPoints().Create(@".\Private$\orderservice");
+
+            var proxy = service.EndPoint<ISomeService>("http://localhost:9101/something");
+
+            proxy.Setup(s => s.IHaveMultipleInputParameters(Parameter.Any<string>(),
+                Parameter.Equals<string>(str => str == "snappy"), Parameter.Any<bool>())).Returns<bool>(param3 => param3.ToString());
+
+            service.Start();
+
+            string returnValue;
+            using (var factory = new ChannelFactory<ISomeService>(new BasicHttpBinding(), "http://localhost:9101/something"))
+            {
+                ISomeService channel = factory.CreateChannel();
+
+                returnValue = channel.IHaveMultipleInputParameters("hello", "snappy", false);
+            }
+
+            service.Dispose();
+
+            Assert.That(returnValue, Is.EqualTo("False"));
+        }
+
     }
 
 
