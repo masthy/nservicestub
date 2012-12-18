@@ -19,7 +19,7 @@ namespace NServiceStub.IntegrationTests.WCF
 
             var service = Configure.Stub().NServiceBusSerializers().WcfEndPoints().Create(@".\Private$\orderservice");
 
-            var proxy = service.EndPoint<IOrderService>("http://localhost:9101/orderservice");
+            var proxy = service.WcfEndPoint<IOrderService>("http://localhost:9101/orderservice");
 
             proxy.Setup(s => s.PlaceOrder(Parameter.Equals<string>(str => str == "dope"))).Returns(() => true)
                .Send<IOrderWasPlaced>(msg => msg.OrderedProduct = "stockings", "shippingservice");
@@ -53,7 +53,7 @@ namespace NServiceStub.IntegrationTests.WCF
         {
             var service = Configure.Stub().NServiceBusSerializers().WcfEndPoints().Create(@".\Private$\orderservice");
 
-            var proxy = service.EndPoint<ISomeService>("http://localhost:9101/something");
+            var proxy = service.WcfEndPoint<ISomeService>("http://localhost:9101/something");
 
             proxy.Setup(s => s.PingBack(Parameter.Any<string>())).Returns<string>(str => str);
 
@@ -77,7 +77,7 @@ namespace NServiceStub.IntegrationTests.WCF
         {
             var service = Configure.Stub().NServiceBusSerializers().WcfEndPoints().Create(@".\Private$\orderservice");
 
-            var proxy = service.EndPoint<ISomeService>("http://localhost:9101/something");
+            var proxy = service.WcfEndPoint<ISomeService>("http://localhost:9101/something");
 
             proxy.Setup(s => s.IHaveMultipleInputParameters(Parameter.Any<string>(),
                 Parameter.Equals<string>(str => str == "snappy"), Parameter.Any<bool>())).Returns<string, string, bool>((param1, param2, param3) => param1);
@@ -102,7 +102,7 @@ namespace NServiceStub.IntegrationTests.WCF
         {
             var service = Configure.Stub().NServiceBusSerializers().WcfEndPoints().Create(@".\Private$\orderservice");
 
-            var proxy = service.EndPoint<ISomeService>("http://localhost:9101/something");
+            var proxy = service.WcfEndPoint<ISomeService>("http://localhost:9101/something");
 
             proxy.Setup(s => s.IHaveMultipleInputParameters(Parameter.Any<string>(),
                 Parameter.Equals<string>(str => str == "snappy"), Parameter.Any<bool>())).Returns<bool>(param3 => param3.ToString());

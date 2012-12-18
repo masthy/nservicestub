@@ -1,6 +1,6 @@
 ﻿namespace NServiceStub.WCF
 {
-    public class NullReturnValue : IInvocationReturnValueProducer
+    public class ProduceNullReturnValue : IInvocationReturnValueProducer
     {
         public object Produce(object[] arguments)
         {

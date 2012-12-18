@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace NServiceStub.WCF
+namespace NServiceStub
 {
-    public class WcfTriggeredMessageSequence : IStepConfigurableMessageSequence
+    public class TriggeredMessageSequence : IStepConfigurableMessageSequence
     {
         private readonly StepChain _sequenceOfEvents = new StepChain();
         private readonly List<IStep> _currentSequenceExecutions = new List<IStep>();

@@ -4,12 +4,12 @@ using System.Reflection;
 
 namespace NServiceStub.WCF
 {
-    public class DelegateReturnValue : IInvocationReturnValueProducer
+    public class ProduceDelegateReturnValue : IInvocationReturnValueProducer
     {
         private readonly Delegate _returnValue;
         private readonly MapInputArgumentHeuristic _mapper;
 
-        public DelegateReturnValue(Delegate returnValue, MethodInfo inputMethod)
+        public ProduceDelegateReturnValue(Delegate returnValue, MethodInfo inputMethod)
         {
             _returnValue = returnValue;
 

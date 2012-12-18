@@ -6,6 +6,7 @@ using Castle.Windsor.Diagnostics;
 using NServiceBus.Unicast;
 using NServiceStub.Configuration;
 using NServiceStub.NServiceBus;
+using NServiceStub.Rest.Configuration;
 using NServiceStub.WCF.Configuration;
 using NUnit.Framework;
 using OrderService.Contracts;
@@ -189,7 +190,23 @@ namespace NServiceStub.IntegrationTests
             StubConfiguration configuration = Configure.Stub();
             ServiceStub service = configuration.NServiceBusSerializers().WcfEndPoints().Create(@".\Private$\orderservice");
 
-            service.EndPoint<IOrderService>("http://localhost:9202/orderservice");
+            service.WcfEndPoint<IOrderService>("http://localhost:9202/orderservice");
+
+            // Act
+            service.Dispose();
+
+            // Assert
+            AssertThatNoTransientsAreLyingAround(configuration);
+        }
+
+        [Test]
+        public void Dispose_DisposingWithNServiceBusSerializerAndRestEndPoint_NoTransientsLyingAround()
+        {
+            // Arrange
+            StubConfiguration configuration = Configure.Stub();
+            ServiceStub service = configuration.NServiceBusSerializers().Restful().Create(@".\Private$\orderservice");
+
+            service.RestEndpoint("http://localhost:9202/orderservice/");
 
             // Act
             service.Dispose();

@@ -3,9 +3,9 @@
     public class WcfMessageSequenceTrigger : IInvocationMatcher
     {
         private readonly IInvocationMatcher _matcher;
-        private readonly WcfTriggeredMessageSequence _sequence;
+        private readonly TriggeredMessageSequence _sequence;
 
-        public WcfMessageSequenceTrigger(IInvocationMatcher matcher, WcfTriggeredMessageSequence sequence)
+        public WcfMessageSequenceTrigger(IInvocationMatcher matcher, TriggeredMessageSequence sequence)
         {
             _matcher = matcher;
             _sequence = sequence;

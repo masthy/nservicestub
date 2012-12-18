@@ -2,19 +2,18 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Moq;
-using NServiceStub.WCF;
 using NUnit.Framework;
 
-namespace NServiceStub.IntegrationTests.WCF
+namespace NServiceStub.IntegrationTests
 {
     [TestFixture]
-    public class WcfTriggeredMessageSequenceTests
+    public class TriggeredMessageSequenceTests
     {
         [Test]
         public void ExecuteNextStep_ExecutingWhileTriggeringNewSequenceOfEventsAsync_CanHandleAsyncExecuteAndAddNewSequences()
         {
             // Arrange
-            var sequence = new WcfTriggeredMessageSequence();
+            var sequence = new TriggeredMessageSequence();
 
             var executionContext = new SequenceExecutionContext(new List<IMessageSequence> {sequence}, "whatever", new Mock<IMessagePicker>().Object);
 

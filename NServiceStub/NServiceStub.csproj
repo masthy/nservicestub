@@ -84,6 +84,7 @@
     <Compile Include="Configuration\MessageSequenceConfiguration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RepeatingMessageSequence.cs" />
+    <Compile Include="SendAfterEndpointEventConfiguration.cs" />
     <Compile Include="Sender.cs" />
     <Compile Include="Configuration\SenderConfiguration.cs" />
     <Compile Include="SendMessage.cs" />
@@ -94,6 +95,7 @@
     <Compile Include="ServiceStub.cs" />
     <Compile Include="ValueComparisonHelper.cs" />
     <Compile Include="VerifyExpectation.cs" />
+    <Compile Include="TriggeredMessageSequence.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

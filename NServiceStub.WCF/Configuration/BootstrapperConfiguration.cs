@@ -3,7 +3,7 @@ using NServiceStub.Configuration;
 
 namespace NServiceStub.WCF.Configuration
 {
-    public static class SConfiguration
+    public static class BootstrapperConfiguration
     {
         public static StubConfiguration WcfEndPoints(this StubConfiguration configuration)
         {

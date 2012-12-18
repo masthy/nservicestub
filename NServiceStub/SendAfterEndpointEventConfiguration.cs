@@ -1,14 +1,14 @@
 ﻿using System;
 using NServiceStub.Configuration;
 
-namespace NServiceStub.WCF.Configuration
+namespace NServiceStub
 {
-    public class SendAfterWcfEventConfiguration
+    public class SendAfterEndpointEventConfiguration
     {
-        private readonly WcfTriggeredMessageSequence _sequenceBeingConfigured;
+        private readonly IStepConfigurableMessageSequence _sequenceBeingConfigured;
         private readonly ServiceStub _componentBeingConfigured;
 
-        public SendAfterWcfEventConfiguration(WcfTriggeredMessageSequence sequenceBeingConfigured, ServiceStub componentBeingConfigured)
+        public SendAfterEndpointEventConfiguration(IStepConfigurableMessageSequence sequenceBeingConfigured, ServiceStub componentBeingConfigured)
         {
             _sequenceBeingConfigured = sequenceBeingConfigured;
             _componentBeingConfigured = componentBeingConfigured;

@@ -63,16 +63,16 @@ namespace NServiceStub.WCF
             return (T)proxy;
         }
 
-        public SendAfterWcfEventConfiguration Setup(Expression<Action<T>> methodSignatureExpectation)
+        public SendAfterEndpointEventConfiguration Setup(Expression<Action<T>> methodSignatureExpectation)
         {
             IInvocationMatcher invocationMatcher = _parser.Parse(methodSignatureExpectation);
 
-            var sequence = new WcfTriggeredMessageSequence();
+            var sequence = new TriggeredMessageSequence();
             var trigger = new WcfMessageSequenceTrigger(invocationMatcher, sequence);
 
-            _serviceImplementation.AddInvocation(trigger, new NullReturnValue());
+            _serviceImplementation.AddInvocation(trigger, new ProduceNullReturnValue());
 
-            return new SendAfterWcfEventConfiguration(sequence, _service);
+            return new SendAfterEndpointEventConfiguration(sequence, _service);
         }
 
         public MethodReturnsSetup<R> Setup<R>(Expression<Func<T, R>> methodSignatureExpectation)
