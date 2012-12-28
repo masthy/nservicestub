@@ -122,6 +122,33 @@ namespace NServiceStub.IntegrationTests.WCF
             Assert.That(returnValue, Is.EqualTo("False"));
         }
 
+        [Test]
+        public void SimpleExpectationSetUp_BindingInputWithMultipleParametersToReturnValue_InvocationValuesArePassedDownTheChain()
+        {
+            MsmqHelpers.Purge("shippingservice");
+            var service = Configure.Stub().NServiceBusSerializers().WcfEndPoints().Create(@".\Private$\orderservice");
+
+            var proxy = service.WcfEndPoint<ISomeService>("http://localhost:9101/something");
+
+            proxy.Setup(s => s.IHaveMultipleInputParameters(Parameter.Any<string>(), Parameter.Equals<string>(str => str == "snappy"), Parameter.Any<bool>())).Returns<string, string, bool>((param1, param2, param3) => param1)
+                .Send<IOrderWasPlaced, string>((msg, product) => { msg.OrderedProduct = product; }, "shippingservice");
+
+            service.Start();
+
+            string firstRequestReturnValue;
+            using (var factory = new ChannelFactory<ISomeService>(new BasicHttpBinding(), "http://localhost:9101/something"))
+            {
+                ISomeService channel = factory.CreateChannel();
+
+                firstRequestReturnValue = channel.IHaveMultipleInputParameters("hello", "snappy", false);
+            }
+
+            service.Dispose();
+
+            Assert.That(MsmqHelpers.PickMessageBody("shippingservice"), Is.StringContaining("hello"));
+            Assert.That(firstRequestReturnValue, Is.EqualTo("hello"));
+        }
+
     }
 
 

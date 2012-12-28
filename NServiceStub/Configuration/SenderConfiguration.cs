@@ -6,13 +6,13 @@ namespace NServiceStub.Configuration
     {
         private readonly ServiceStub _componentBeingConfigured;
         private readonly IStepConfigurableMessageSequence _sequenceBeingConfigured;
-        private readonly SendMessage _lastStep;
+        private readonly IStep _lastSendStep;
 
-        public SenderConfiguration(ServiceStub componentBeingConfigured, IStepConfigurableMessageSequence sequenceBeingConfigured, SendMessage lastStep)
+        public SenderConfiguration(ServiceStub componentBeingConfigured, IStepConfigurableMessageSequence sequenceBeingConfigured, IStep lastSendStep)
         {
             _componentBeingConfigured = componentBeingConfigured;
             _sequenceBeingConfigured = sequenceBeingConfigured;
-            _lastStep = lastStep;
+            _lastSendStep = lastSendStep;
         }
 
         public ExpectationConfiguration Expect<T>(Func<T, bool> comparator) where T : class
@@ -22,8 +22,8 @@ namespace NServiceStub.Configuration
 
         public SendMessageExpectedNumberOfTimesConfiguration NumberOfTimes(int numberOfTimesToSendMessage)
         {
-            var step = new SendMessageNTimes(_lastStep, numberOfTimesToSendMessage);
-            _sequenceBeingConfigured.ReplaceStep(_lastStep, step);
+            var step = new ExecuteStepNTimes(_lastSendStep, numberOfTimesToSendMessage);
+            _sequenceBeingConfigured.ReplaceStep(_lastSendStep, step);
             return new SendMessageExpectedNumberOfTimesConfiguration(_componentBeingConfigured, _sequenceBeingConfigured);
         }
 

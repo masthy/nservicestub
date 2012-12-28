@@ -68,7 +68,7 @@ namespace NServiceStub.WCF
             IInvocationMatcher invocationMatcher = _parser.Parse(methodSignatureExpectation);
 
             var sequence = new TriggeredMessageSequence();
-            var trigger = new WcfMessageSequenceTrigger(invocationMatcher, sequence);
+            var trigger = new InvocationTriggeringSequenceOfEvents(invocationMatcher, sequence);
 
             _serviceImplementation.AddInvocation(trigger, new ProduceNullReturnValue());
 

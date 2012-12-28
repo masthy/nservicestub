@@ -5,32 +5,33 @@ namespace NServiceStub
     public class TriggeredMessageSequence : IStepConfigurableMessageSequence
     {
         private readonly StepChain _sequenceOfEvents = new StepChain();
-        private readonly List<IStep> _currentSequenceExecutions = new List<IStep>();
+        private readonly List<KeyValuePair<IStep, IMessageInitializerParameterBinder>> _currentSequenceExecutions = new List<KeyValuePair<IStep, IMessageInitializerParameterBinder>>();
         private readonly object _currentSequenceExecutionsLock = new object();
 
         public void ExecuteNextStep(SequenceExecutionContext executionContext)
         {
-            List<IStep> currentSteps;
+            List<KeyValuePair<IStep, IMessageInitializerParameterBinder>> currentStepsSnapshot;
             lock (_currentSequenceExecutionsLock)
             {
-                currentSteps = new List<IStep>(_currentSequenceExecutions);
+                currentStepsSnapshot = new List<KeyValuePair<IStep, IMessageInitializerParameterBinder>>(_currentSequenceExecutions);
             }
 
-            foreach (var currentStep in currentSteps)
+            foreach (var currentStep in currentStepsSnapshot)
             {
-                currentStep.Execute(executionContext);
+                executionContext.CapturedInput = currentStep.Value;
+                currentStep.Key.Execute(executionContext);
             }
 
             lock(_currentSequenceExecutionsLock)
             {
                 int index = 0;
 
-                foreach (var currentStep in currentSteps)
+                foreach (var currentStep in currentStepsSnapshot)
                 {
-                    IStep next = _sequenceOfEvents.GetStepAfter(currentStep);
+                    IStep next = _sequenceOfEvents.GetStepAfter(currentStep.Key);
 
                     if (next != null)
-                        _currentSequenceExecutions[index] = next;
+                        _currentSequenceExecutions[index] = new KeyValuePair<IStep, IMessageInitializerParameterBinder>(next, _currentSequenceExecutions[index].Value);
                     else
                         _currentSequenceExecutions.Remove(currentStep);
                     index++;
@@ -39,14 +40,14 @@ namespace NServiceStub
             }
         }
 
-        public void TriggerNewSequenceOfEvents()
+        public void TriggerNewSequenceOfEvents(IMessageInitializerParameterBinder capturedArgumentsOfTrigger)
         {
             if (_sequenceOfEvents.Root == null)
                 return;
 
             lock(_currentSequenceExecutionsLock)
             {
-                _currentSequenceExecutions.Add(_sequenceOfEvents.Root);
+                _currentSequenceExecutions.Add(new KeyValuePair<IStep, IMessageInitializerParameterBinder>(_sequenceOfEvents.Root, capturedArgumentsOfTrigger));
             }
         }
 

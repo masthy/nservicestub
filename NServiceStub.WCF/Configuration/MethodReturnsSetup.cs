@@ -76,7 +76,7 @@ namespace NServiceStub.WCF.Configuration
         private SendAfterEndpointEventConfiguration ReturnsInternal(IInvocationReturnValueProducer returnValueProducer)
         {
             var sequence = new TriggeredMessageSequence();
-            var trigger = new WcfMessageSequenceTrigger(_invocationMatcher, sequence);
+            var trigger = new InvocationTriggeringSequenceOfEvents(_invocationMatcher, sequence);
 
             _wcfProxy.AddInvocation(trigger, returnValueProducer);
 

@@ -63,6 +63,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BindParametersAndSendMessage.cs" />
     <Compile Include="Configuration\CastleInstaller.cs" />
     <Compile Include="Configuration\ConfigurationStepCreator.cs" />
     <Compile Include="Configuration\Configure.cs" />
@@ -71,6 +72,7 @@
     <Compile Include="IExtensionBoundToStubLifecycle.cs" />
     <Compile Include="IIExtensionBoundToStubLifecycleFactory.cs" />
     <Compile Include="IFactory.cs" />
+    <Compile Include="IMessageInitializerParameterBinder.cs" />
     <Compile Include="IMessageSequence.cs" />
     <Compile Include="IStep.cs" />
     <Compile Include="IStepConfigurableMessageSequence.cs" />
@@ -89,7 +91,7 @@
     <Compile Include="Configuration\SenderConfiguration.cs" />
     <Compile Include="SendMessage.cs" />
     <Compile Include="Configuration\SendMessageExpectedNumberOfTimesConfiguration.cs" />
-    <Compile Include="SendMessageNTimes.cs" />
+    <Compile Include="ExecuteStepNTimes.cs" />
     <Compile Include="StepChain.cs" />
     <Compile Include="SequenceExecutionContext.cs" />
     <Compile Include="ServiceStub.cs" />

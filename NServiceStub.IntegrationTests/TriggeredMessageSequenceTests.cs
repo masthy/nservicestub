@@ -25,7 +25,7 @@ namespace NServiceStub.IntegrationTests
             for (int i = 0; i < 1000; i++)
             {
                 var execute = new Task(obj => sequence.ExecuteNextStep(obj as SequenceExecutionContext), executionContext);
-                var triggerNewSequenceOfEvents = new Task(sequence.TriggerNewSequenceOfEvents);
+                var triggerNewSequenceOfEvents = new Task(() => sequence.TriggerNewSequenceOfEvents(new Mock<IMessageInitializerParameterBinder>().Object));
 
                 tasks.Add(execute);
                 tasks.Add(triggerNewSequenceOfEvents);

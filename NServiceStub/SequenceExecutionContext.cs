@@ -21,6 +21,8 @@ namespace NServiceStub
             InitializeCurrentSteps(sequencesToExecute);
         }
 
+        public IMessageInitializerParameterBinder CapturedInput { get; set; }
+
         public object[] GetNextMessage(IMessageSequence requestor)
         {
             if (_messageBuffer[requestor].Count == 0)

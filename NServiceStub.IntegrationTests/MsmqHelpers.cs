@@ -1,4 +1,5 @@
-﻿using System.Messaging;
+﻿using System.IO;
+using System.Messaging;
 
 namespace NServiceStub.IntegrationTests
 {
@@ -41,6 +42,18 @@ namespace NServiceStub.IntegrationTests
                     queue.Send(body);
             }
 
+        }
+
+        public static object PickMessageBody(string queueName)
+        {
+            using (var queue = CreateQueue(queueName))
+            {
+                Message message = queue.Receive();
+                using (TextReader reader = new StreamReader(message.BodyStream))
+                {
+                    return reader.ReadToEnd();
+                }
+            }
         }
     }
 }

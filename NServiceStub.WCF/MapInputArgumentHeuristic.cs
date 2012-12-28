@@ -9,12 +9,12 @@ namespace NServiceStub.WCF
     {
         readonly List<int> _indexOfRequiredArgumentVsIndexOfMethodParameter = new List<int>();
 
-        public MapInputArgumentHeuristic(MethodInfo method, IEnumerable<Type> requiredArguments)
+        public MapInputArgumentHeuristic(MethodInfo source, Delegate destination, int skipNumberOfDestinationArguments = 0)
         {
-            ParameterInfo[] methodParameters = method.GetParameters();
+            ParameterInfo[] methodParameters = source.GetParameters();
             int indexOfLastScannedInputArgument = -1;
 
-            foreach(var requiredArgument in requiredArguments)
+            foreach (var requiredArgument in destination.Method.GetParameters().Skip(skipNumberOfDestinationArguments).Select(param => param.ParameterType))
             {
                 bool foundArgument = false;
 

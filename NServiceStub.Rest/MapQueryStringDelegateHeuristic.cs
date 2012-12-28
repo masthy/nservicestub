@@ -11,37 +11,50 @@ namespace NServiceStub.Rest
 
         private readonly List<KeyValuePair<Type, KeyValuePair<string, ParameterLocation>>> _expectedArgumentTypeVsQueryParameter = new List<KeyValuePair<Type, KeyValuePair<string, ParameterLocation>>>();
 
-        public MapQueryStringDelegateHeuristic(Route source, Delegate destination)
+        public MapQueryStringDelegateHeuristic(Route source, Delegate destination, int skipNumberOfDestinationArguments = 0)
         {
             _source = source;
-            BuildMap(source, destination);
+            BuildMap(source, destination, skipNumberOfDestinationArguments);
         }
 
-        private void BuildMap(Route source, Delegate destination)
+        public IEnumerable<object> Map(string rawUrl)
+        {
+            var argumentValues = new List<object>();
+
+            foreach (var argumentVsParameter in _expectedArgumentTypeVsQueryParameter)
+            {
+                object parameterValue = _source.GetParameterValue(rawUrl, argumentVsParameter.Key, argumentVsParameter.Value.Key, argumentVsParameter.Value.Value);
+                argumentValues.Add(parameterValue);
+            }
+
+            return argumentValues;
+        }
+
+        private void BuildMap(Route source, Delegate destination, int skipNumberOfDestinationArguments)
         {
             ParameterInfo[] requiredArguments = destination.Method.GetParameters();
 
-            if (requiredArguments.Length == 0)
+            if (requiredArguments.Length == skipNumberOfDestinationArguments)
                 return;
-            
-            if (MapByArgumentName(source, requiredArguments[0]))
+
+            if (MapByArgumentName(source, requiredArguments[skipNumberOfDestinationArguments]))
             {
-                foreach (var argument in requiredArguments.Skip(1))
+                foreach (ParameterInfo argument in requiredArguments.Skip(skipNumberOfDestinationArguments + 1))
                     MapByArgumentName(source, argument);
             }
             else
-                MapArgumentsByPosition(source, requiredArguments);
+                MapArgumentsByPosition(source, requiredArguments, skipNumberOfDestinationArguments);
         }
 
-        private void MapArgumentsByPosition(Route source, ParameterInfo[] requiredArguments)
+        private void MapArgumentsByPosition(Route source, ParameterInfo[] requiredArguments, int skipNumberOfDestinationArguments)
         {
-            if (requiredArguments.Length != source.QueryParameters.Count() + source.RouteParameters.Count())
+            if ((requiredArguments.Length - skipNumberOfDestinationArguments) != source.QueryParameters.Count() + source.RouteParameters.Count())
                 throw new InvalidOperationException("Either use parameter names mathing the query and route parameters or specify as many parameters as the combined number of route and query variables");
 
             IEnumerator<string> routeParameters = source.RouteParameters.GetEnumerator();
             IEnumerator<string> queryParameters = source.QueryParameters.GetEnumerator();
 
-            foreach (var argument in requiredArguments)
+            foreach (ParameterInfo argument in requiredArguments.Skip(skipNumberOfDestinationArguments))
             {
                 if (routeParameters.MoveNext())
                 {
@@ -72,19 +85,6 @@ namespace NServiceStub.Rest
                 return true;
             }
             return false;
-        }
-
-        public object[] Map(string rawUrl)
-        {
-            var argumentValues = new List<object>();
-
-            foreach (var argumentVsParameter in _expectedArgumentTypeVsQueryParameter)
-            {
-                object parameterValue = _source.GetParameterValue(rawUrl, argumentVsParameter.Key, argumentVsParameter.Value.Key, argumentVsParameter.Value.Value);
-                argumentValues.Add(parameterValue);
-            }
-
-            return argumentValues.ToArray();
         }
     }
 }

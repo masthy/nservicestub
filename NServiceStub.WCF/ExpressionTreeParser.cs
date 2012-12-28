@@ -61,7 +61,7 @@ namespace NServiceStub.WCF
                     }
                     else
                     {
-                        throw new NotImplementedException("Have i've been lazy?");
+                        throw new NotImplementedException("Have I've been lazy?");
                     }
                 }
                 else
@@ -70,7 +70,7 @@ namespace NServiceStub.WCF
                 }
             }
 
-            return new InvocationMatcher(matchers.ToArray());
+            return new InvocationMatcher(matchers.ToArray(), serviceMethod.Method);
         }
     }
 }

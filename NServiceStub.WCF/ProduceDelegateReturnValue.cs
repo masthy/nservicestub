@@ -13,7 +13,7 @@ namespace NServiceStub.WCF
         {
             _returnValue = returnValue;
 
-            _mapper = new MapInputArgumentHeuristic(inputMethod, returnValue.Method.GetParameters().Select(param => param.ParameterType));
+            _mapper = new MapInputArgumentHeuristic(inputMethod, returnValue);
         }
 
         public object Produce(object[] arguments)

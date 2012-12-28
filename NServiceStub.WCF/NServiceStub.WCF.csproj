@@ -50,6 +50,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CapturedServiceMethodInvocation.cs" />
     <Compile Include="Configuration\Bootstrapper.cs" />
     <Compile Include="ProduceDelegateReturnValue.cs" />
     <Compile Include="IInvocationReturnValueProducer.cs" />
@@ -58,7 +59,7 @@
     <Compile Include="Configuration\BootstrapperConfiguration.cs" />
     <Compile Include="MapInputArgumentHeuristic.cs" />
     <Compile Include="ProduceNullReturnValue.cs" />
-    <Compile Include="WcfMessageSequenceTrigger.cs" />
+    <Compile Include="InvocationTriggeringSequenceOfEvents.cs" />
     <Compile Include="ExpressionTreeParser.cs" />
     <Compile Include="FuncExtensions.cs" />
     <Compile Include="IExpressionTreeParser.cs" />

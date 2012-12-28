@@ -1,4 +1,6 @@
-﻿namespace NServiceStub.Rest
+﻿using System.Reflection;
+
+namespace NServiceStub.WCF
 {
     public class InvocationTriggeringSequenceOfEvents : IInvocationMatcher
     {
@@ -11,15 +13,19 @@
             _sequence = sequence;
         }
 
-        public bool Matches(string rawUrl, IRouteDefinition routeOwningUrl)
+        public bool Matches(object[] arguments)
         {
-            if (_matcher.Matches(rawUrl, routeOwningUrl))
+            if (_matcher.Matches(arguments))
             {
-                _sequence.TriggerNewSequenceOfEvents(new CapturedRouteInvocation(rawUrl, routeOwningUrl));
+                _sequence.TriggerNewSequenceOfEvents(new CapturedServiceMethodInvocation(InspectedMethod, arguments));
                 return true;
             }
-            else
-                return false;
+            return false;
+        }
+
+        public MethodInfo InspectedMethod
+        {
+            get { return _matcher.InspectedMethod; }
         }
     }
 }
