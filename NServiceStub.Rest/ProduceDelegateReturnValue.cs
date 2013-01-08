@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 
 namespace NServiceStub.Rest
 {
@@ -13,9 +14,9 @@ namespace NServiceStub.Rest
             _mapper = mapper;
         }
 
-        public R Produce(string rawUrl, IRouteDefinition route)
+        public R Produce(HttpListenerRequest request, IRouteDefinition route)
         {
-            return (R)_returnValueProducer.DynamicInvoke(_mapper.Map(rawUrl));
+            return (R)_returnValueProducer.DynamicInvoke(_mapper.Map(request));
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace NServiceStub.Rest
+﻿using System.Net;
+
+namespace NServiceStub.Rest
 {
     public interface IRouteDefinition<R> : IRouteDefinition
     {
@@ -7,7 +9,7 @@
 
     public interface IRouteDefinition
     {
-        bool TryInvocation(string rawUrl, out object returnValue);
+        bool TryInvocation(HttpListenerRequest request, out object returnValue);
 
         Route Route { get; }        
     }

@@ -7,6 +7,9 @@ namespace NServiceStub.Rest
 {
     public class QueryStringParser
     {
+        private const string QueryParameterGroupName = "param";
+        private const string QueryParameterValueGroupName = "value";
+
         public Route Parse(string queryString)
         {
             IEnumerator<char> tokenizer = queryString.GetEnumerator();
@@ -18,41 +21,42 @@ namespace NServiceStub.Rest
         private Route ParseRoute(IEnumerator<char> tokenizer)
         {
             IDictionary<string, string> routeParametersVsNamedGroup = new Dictionary<string, string>();
-            IDictionary<string, string> queryParametersVsNamedGroup = new Dictionary<string, string>();
-            StringBuilder routePattern = ParseRoute(tokenizer, new StringBuilder("^"), routeParametersVsNamedGroup, queryParametersVsNamedGroup);
+            IList<string> queryParameters = new List<string>();
+
+            StringBuilder routePattern = ParseRoute(tokenizer, new StringBuilder("^"), routeParametersVsNamedGroup, queryParameters);
 
             routePattern.Append("$");
 
-            return new Route(new Regex(routePattern.ToString()), routeParametersVsNamedGroup, queryParametersVsNamedGroup);
+            return new Route(new Regex(routePattern.ToString()), routeParametersVsNamedGroup, queryParameters, QueryParameterGroupName, QueryParameterValueGroupName);
         }
 
-        private static StringBuilder ParseRoute(IEnumerator<char> tokenizer, StringBuilder routePattern, IDictionary<string, string> routeParametersVsNamedGroup, IDictionary<string, string> queryParametersVsNamedGroup)
+        private static StringBuilder ParseRoute(IEnumerator<char> tokenizer, StringBuilder routePattern, IDictionary<string, string> routeParametersVsNamedGroup, IList<string> queryParameters)
         {
             char nextCharacterInRoute = tokenizer.Current;
 
             if (nextCharacterInRoute == '{')
             {
                 tokenizer.MoveNext();
-                return ParseRouteParameter(tokenizer, routePattern, routeParametersVsNamedGroup, queryParametersVsNamedGroup);
+                return ParseRouteParameter(tokenizer, routePattern, routeParametersVsNamedGroup, queryParameters);
             }
             else if (nextCharacterInRoute == '?')
             {
                 routePattern.Append(Regex.Escape(nextCharacterInRoute.ToString(CultureInfo.InvariantCulture)));
                 tokenizer.MoveNext();
-                return ParseQueryStringParameters(tokenizer, routePattern, queryParametersVsNamedGroup);
+                return ParseQueryStringParameters(tokenizer, routePattern, queryParameters);
             }
             else
             {
                 routePattern.Append(Regex.Escape(nextCharacterInRoute.ToString(CultureInfo.InvariantCulture)));
                 if (tokenizer.MoveNext())
-                    return ParseRoute(tokenizer, routePattern, routeParametersVsNamedGroup, queryParametersVsNamedGroup);
+                    return ParseRoute(tokenizer, routePattern, routeParametersVsNamedGroup, queryParameters);
                 else
                     return routePattern;
 
             }
         }
 
-        private static StringBuilder ParseQueryStringParameters(IEnumerator<char> tokenizer, StringBuilder routePattern, IDictionary<string, string> queryParameters)
+        private static StringBuilder ParseQueryStringParameters(IEnumerator<char> tokenizer, StringBuilder routePattern, IList<string> queryParameters)
         {
             var parameterName = new StringBuilder();
 
@@ -61,13 +65,12 @@ namespace NServiceStub.Rest
             while (!endOfStream && tokenizer.Current != '&')
             {
                 parameterName.Append(tokenizer.Current);
-                routePattern.Append(tokenizer.Current);
                 endOfStream = !tokenizer.MoveNext();
             }
 
             string param = parameterName.ToString();
-            queryParameters.Add(param, param);
-            routePattern.Append(string.Format("=(?<{0}>[^&]+)", param));
+            routePattern.Append(string.Format(@"(?<{0}{2}>[^=\?&]+)=(?<{1}{2}>[^&]+)", QueryParameterGroupName, QueryParameterValueGroupName, queryParameters.Count));
+            queryParameters.Add(param);
 
             if (endOfStream)
                 return routePattern;
@@ -79,7 +82,7 @@ namespace NServiceStub.Rest
             }
         }
 
-        private static StringBuilder ParseRouteParameter(IEnumerator<char> tokenizer, StringBuilder routePattern, IDictionary<string, string> routeParameters, IDictionary<string, string> queryParameters)
+        private static StringBuilder ParseRouteParameter(IEnumerator<char> tokenizer, StringBuilder routePattern, IDictionary<string, string> routeParameters, IList<string> queryParameters)
         {
             var parameter = new StringBuilder();
 

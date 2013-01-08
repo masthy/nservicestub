@@ -1,4 +1,5 @@
-﻿using NServiceStub.Rest.Configuration;
+﻿using System.Net;
+using NServiceStub.Rest.Configuration;
 
 namespace NServiceStub.Rest
 {
@@ -14,7 +15,7 @@ namespace NServiceStub.Rest
             return this;
         }
 
-        public bool Matches(string rawUrl, IRouteDefinition routeOwningUrl)
+        public bool Matches(HttpListenerRequest request, IRouteDefinition routeOwningUrl)
         {
             return true;
         }

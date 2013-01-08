@@ -1,7 +1,9 @@
-﻿namespace NServiceStub.Rest
+﻿using System.Net;
+
+namespace NServiceStub.Rest
 {
     public interface IInvocationMatcher
     {
-        bool Matches(string rawUrl, IRouteDefinition routeOwningUrl);
+        bool Matches(HttpListenerRequest request, IRouteDefinition routeOwningUrl);
     }
 }

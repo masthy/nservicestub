@@ -1,4 +1,6 @@
-﻿namespace NServiceStub.Rest
+﻿using System.Net;
+
+namespace NServiceStub.Rest
 {
     public class InvocationTriggeringSequenceOfEvents : IInvocationMatcher
     {
@@ -11,11 +13,11 @@
             _sequence = sequence;
         }
 
-        public bool Matches(string rawUrl, IRouteDefinition routeOwningUrl)
+        public bool Matches(HttpListenerRequest request, IRouteDefinition routeOwningUrl)
         {
-            if (_matcher.Matches(rawUrl, routeOwningUrl))
+            if (_matcher.Matches(request, routeOwningUrl))
             {
-                _sequence.TriggerNewSequenceOfEvents(new CapturedRouteInvocation(rawUrl, routeOwningUrl));
+                _sequence.TriggerNewSequenceOfEvents(new CapturedRouteInvocation(request, routeOwningUrl));
                 return true;
             }
             else

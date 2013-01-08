@@ -1,4 +1,6 @@
-﻿namespace NServiceStub.Rest
+﻿using System.Net;
+
+namespace NServiceStub.Rest
 {
     public class ParameterEqualsValue<T> : IInvocationMatcher
     {
@@ -13,9 +15,9 @@
             _parameterLocation = parameterLocation;
         }
 
-        public bool Matches(string rawUrl, IRouteDefinition routeOwningUrl)
+        public bool Matches(HttpListenerRequest request, IRouteDefinition routeOwningUrl)
         {
-            var parameterValue = routeOwningUrl.Route.GetParameterValue<T>(rawUrl, _parameterName, _parameterLocation);
+            var parameterValue = routeOwningUrl.Route.GetParameterValue<T>(request, _parameterName, _parameterLocation);
 
             return _expectedValue.Equals(parameterValue);
         }

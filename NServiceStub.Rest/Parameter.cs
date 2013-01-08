@@ -14,6 +14,11 @@ namespace NServiceStub.Rest
             return new ParameterConfiguration<T>(ParameterLocation.Query, name);            
         }
 
+        public static ParameterConfiguration<T> HeaderParameter<T>(string name)
+        {
+            return new ParameterConfiguration<T>(ParameterLocation.Header, name);
+        }
+
         public static IRouteInvocationConfiguration Any()
         {
             return TrueOnAnyInvocationConfiguration.Instance;

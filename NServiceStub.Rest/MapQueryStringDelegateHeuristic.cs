@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 
 namespace NServiceStub.Rest
@@ -17,13 +18,13 @@ namespace NServiceStub.Rest
             BuildMap(source, destination, skipNumberOfDestinationArguments);
         }
 
-        public IEnumerable<object> Map(string rawUrl)
+        public IEnumerable<object> Map(HttpListenerRequest request)
         {
             var argumentValues = new List<object>();
 
             foreach (var argumentVsParameter in _expectedArgumentTypeVsQueryParameter)
             {
-                object parameterValue = _source.GetParameterValue(rawUrl, argumentVsParameter.Key, argumentVsParameter.Value.Key, argumentVsParameter.Value.Value);
+                object parameterValue = _source.GetParameterValue(request, argumentVsParameter.Key, argumentVsParameter.Value.Key, argumentVsParameter.Value.Value);
                 argumentValues.Add(parameterValue);
             }
 

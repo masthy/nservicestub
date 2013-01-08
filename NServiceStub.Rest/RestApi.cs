@@ -89,7 +89,7 @@ namespace NServiceStub.Rest
             if (route != null)
             {
                 object returnValue;
-                if (!route.TryInvocation(context.Request.RawUrl, out returnValue))
+                if (!route.TryInvocation(context.Request, out returnValue))
                 {
                     returnValue = null;
                 }

@@ -14,7 +14,7 @@
             return _lastStep.CreateInvocationInspector();
         }
 
-        public IRouteInvocationConfiguration And(IRouteInvocationConfiguration inspection)
+        public LogicalCombinablePredicate And(IRouteInvocationConfiguration inspection)
         {
             var andPredicate = _lastStep as LogicalAndPredicateConfiguration;
 

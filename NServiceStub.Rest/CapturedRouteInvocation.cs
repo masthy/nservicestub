@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Reflection;
 
 namespace NServiceStub.Rest
 {
     public class CapturedRouteInvocation : IMessageInitializerParameterBinder
     {
-        private readonly string _rawUrl;
+        private readonly HttpListenerRequest _request;
         private readonly IRouteDefinition _routeOwningUrl;
 
-        public CapturedRouteInvocation(string rawUrl, IRouteDefinition routeOwningUrl)
+        public CapturedRouteInvocation(HttpListenerRequest request, IRouteDefinition routeOwningUrl)
         {
-            _rawUrl = rawUrl;
+            _request = request;
             _routeOwningUrl = routeOwningUrl;
         }
 
@@ -31,7 +32,7 @@ namespace NServiceStub.Rest
             {
                 var mapper = new MapQueryStringDelegateHeuristic(_routeOwningUrl.Route, messageInitializer, 1);
 
-                argumentValues.AddRange(mapper.Map(_rawUrl));
+                argumentValues.AddRange(mapper.Map(_request));
             }
             return argumentValues.ToArray();
         }

@@ -1,7 +1,9 @@
-﻿namespace NServiceStub.Rest
+﻿using System.Net;
+
+namespace NServiceStub.Rest
 {
     public interface IInvocationReturnValueProducer<R>
     {
-        R Produce(string rawUrl, IRouteDefinition route);
+        R Produce(HttpListenerRequest request, IRouteDefinition route);
     }
 }

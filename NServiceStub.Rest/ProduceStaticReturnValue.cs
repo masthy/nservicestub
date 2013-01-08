@@ -1,4 +1,6 @@
-﻿namespace NServiceStub.Rest
+﻿using System.Net;
+
+namespace NServiceStub.Rest
 {
     public class ProduceStaticReturnValue<R> : IInvocationReturnValueProducer<R>
     {
@@ -9,7 +11,7 @@
             _returnValue = returnValue;
         }
 
-        public R Produce(string rawUrl, IRouteDefinition route)
+        public R Produce(HttpListenerRequest request, IRouteDefinition route)
         {
             return _returnValue;
         }

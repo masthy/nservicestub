@@ -3,6 +3,7 @@
     public enum ParameterLocation
     {
         Query,
-        Route
+        Route,
+        Header
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Net;
 
 namespace NServiceStub.Rest
 {
@@ -16,13 +17,13 @@ namespace NServiceStub.Rest
             _invocationVsReturnValue.Add(invocation, returnValue);
         }
 
-        public bool TryInvocation(string rawUrl, out object returnValue)
+        public bool TryInvocation(HttpListenerRequest request, out object returnValue)
         {
             foreach (var invationVsReturnValue in _invocationVsReturnValue)
             {
-                if (invationVsReturnValue.Key.Matches(rawUrl, this))
+                if (invationVsReturnValue.Key.Matches(request, this))
                 {
-                    returnValue = invationVsReturnValue.Value.Produce(rawUrl, this);
+                    returnValue = invationVsReturnValue.Value.Produce(request, this);
                     return true;
                 }
             }

@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NServiceStub.WCF", "NServic
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NServiceStub.Rest", "NServiceStub.Rest\NServiceStub.Rest.csproj", "{E83F2240-91D2-4F45-96B0-2912F06F9D79}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NServiceStub.UnitTests", "NServiceStub.UnitTests\NServiceStub.UnitTests.csproj", "{B5229196-AF56-49CC-8577-B049EDFD45C9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +65,10 @@ Global
 		{E83F2240-91D2-4F45-96B0-2912F06F9D79}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E83F2240-91D2-4F45-96B0-2912F06F9D79}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E83F2240-91D2-4F45-96B0-2912F06F9D79}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B5229196-AF56-49CC-8577-B049EDFD45C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5229196-AF56-49CC-8577-B049EDFD45C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5229196-AF56-49CC-8577-B049EDFD45C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5229196-AF56-49CC-8577-B049EDFD45C9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -73,5 +79,6 @@ Global
 		{E68A4715-122B-4D52-A29A-9204ACB30475} = {2DB76367-4D30-47E1-9038-98D0A5D4B974}
 		{87018AA5-8DF3-445B-AB0D-02AB4E11FE6F} = {2DB76367-4D30-47E1-9038-98D0A5D4B974}
 		{D76D49B4-A016-4332-B82D-72E9870FDAA2} = {2DB76367-4D30-47E1-9038-98D0A5D4B974}
+		{B5229196-AF56-49CC-8577-B049EDFD45C9} = {2DB76367-4D30-47E1-9038-98D0A5D4B974}
 	EndGlobalSection
 EndGlobal

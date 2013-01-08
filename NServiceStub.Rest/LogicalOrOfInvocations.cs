@@ -1,4 +1,6 @@
-﻿namespace NServiceStub.Rest
+﻿using System.Net;
+
+namespace NServiceStub.Rest
 {
     public class LogicalOrOfInvocations : IInvocationMatcher
     {
@@ -11,9 +13,9 @@
             _right = right;
         }
 
-        public bool Matches(string rawUrl, IRouteDefinition routeOwningUrl)
+        public bool Matches(HttpListenerRequest request, IRouteDefinition routeOwningUrl)
         {
-            return _left.Matches(rawUrl, routeOwningUrl) || _right.Matches(rawUrl, routeOwningUrl);
+            return _left.Matches(request, routeOwningUrl) || _right.Matches(request, routeOwningUrl);
         }
     }
 }

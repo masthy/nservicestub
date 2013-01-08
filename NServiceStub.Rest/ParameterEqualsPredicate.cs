@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 
 namespace NServiceStub.Rest
 {
@@ -15,9 +16,9 @@ namespace NServiceStub.Rest
             _parameterName = parameterName;
         }
 
-        public bool Matches(string rawUrl, IRouteDefinition routeOwningUrl)
+        public bool Matches(HttpListenerRequest request, IRouteDefinition routeOwningUrl)
         {
-            var parameterValue = routeOwningUrl.Route.GetParameterValue<T>(rawUrl, _parameterName, _parameterLocation);
+            var parameterValue = routeOwningUrl.Route.GetParameterValue<T>(request, _parameterName, _parameterLocation);
 
             return _predicate(parameterValue);
         }

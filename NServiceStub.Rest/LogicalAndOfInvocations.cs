@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 
 namespace NServiceStub.Rest
 {
@@ -12,9 +13,9 @@ namespace NServiceStub.Rest
             _predicatesToCombine = predicatesToCombine;
         }
 
-        public bool Matches(string rawUrl, IRouteDefinition routeOwningUrl)
+        public bool Matches(HttpListenerRequest request, IRouteDefinition routeOwningUrl)
         {
-            return _predicatesToCombine.All(predicate => predicate.Matches(rawUrl, routeOwningUrl));
+            return _predicatesToCombine.All(predicate => predicate.Matches(request, routeOwningUrl));
         }
     }
 }
