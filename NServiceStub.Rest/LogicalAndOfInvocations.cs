@@ -13,9 +13,10 @@ namespace NServiceStub.Rest
             _predicatesToCombine = predicatesToCombine;
         }
 
-        public bool Matches(HttpListenerRequest request, IRouteDefinition routeOwningUrl)
+        public bool Matches(HttpListenerRequest request)
         {
-            return _predicatesToCombine.All(predicate => predicate.Matches(request, routeOwningUrl));
+            return _predicatesToCombine.All(predicate => predicate.Matches(request));
         }
+
     }
 }

@@ -8,11 +8,11 @@ namespace NServiceStub.Rest
 {
     public class MapQueryStringDelegateHeuristic
     {
-        private readonly Route _source;
+        private readonly Get _source;
 
         private readonly List<KeyValuePair<Type, KeyValuePair<string, ParameterLocation>>> _expectedArgumentTypeVsQueryParameter = new List<KeyValuePair<Type, KeyValuePair<string, ParameterLocation>>>();
 
-        public MapQueryStringDelegateHeuristic(Route source, Delegate destination, int skipNumberOfDestinationArguments = 0)
+        public MapQueryStringDelegateHeuristic(Get source, Delegate destination, int skipNumberOfDestinationArguments = 0)
         {
             _source = source;
             BuildMap(source, destination, skipNumberOfDestinationArguments);
@@ -31,7 +31,7 @@ namespace NServiceStub.Rest
             return argumentValues;
         }
 
-        private void BuildMap(Route source, Delegate destination, int skipNumberOfDestinationArguments)
+        private void BuildMap(Get source, Delegate destination, int skipNumberOfDestinationArguments)
         {
             ParameterInfo[] requiredArguments = destination.Method.GetParameters();
 
@@ -47,7 +47,7 @@ namespace NServiceStub.Rest
                 MapArgumentsByPosition(source, requiredArguments, skipNumberOfDestinationArguments);
         }
 
-        private void MapArgumentsByPosition(Route source, ParameterInfo[] requiredArguments, int skipNumberOfDestinationArguments)
+        private void MapArgumentsByPosition(Get source, ParameterInfo[] requiredArguments, int skipNumberOfDestinationArguments)
         {
             if ((requiredArguments.Length - skipNumberOfDestinationArguments) != source.QueryParameters.Count() + source.RouteParameters.Count())
                 throw new InvalidOperationException("Either use parameter names mathing the query and route parameters or specify as many parameters as the combined number of route and query variables");
@@ -71,7 +71,7 @@ namespace NServiceStub.Rest
             }
         }
 
-        private bool MapByArgumentName(Route source, ParameterInfo argument)
+        private bool MapByArgumentName(Get source, ParameterInfo argument)
         {
             string argumentName = argument.Name;
 

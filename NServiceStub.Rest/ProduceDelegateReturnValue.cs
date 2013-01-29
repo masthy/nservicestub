@@ -14,7 +14,7 @@ namespace NServiceStub.Rest
             _mapper = mapper;
         }
 
-        public R Produce(HttpListenerRequest request, IRouteDefinition route)
+        public R Produce(HttpListenerRequest request)
         {
             return (R)_returnValueProducer.DynamicInvoke(_mapper.Map(request));
         }

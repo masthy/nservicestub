@@ -236,8 +236,9 @@ namespace NServiceStub.IntegrationTests
         {
             service.RequestStop();
             while (service.IsRunning)
-            {
-            }
+            {}
+
+            service.Dispose();
         }
     }
 }

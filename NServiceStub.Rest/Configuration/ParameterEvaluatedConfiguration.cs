@@ -2,7 +2,7 @@ using System;
 
 namespace NServiceStub.Rest.Configuration
 {
-    public class ParameterEvaluatedConfiguration<T> : IRouteInvocationConfiguration
+    public class ParameterEvaluatedConfiguration<T> : IGetOrPostInvocationConfiguration
     {
         private readonly Func<T, bool> _predicate;
         private readonly string _parameterName;
@@ -15,9 +15,14 @@ namespace NServiceStub.Rest.Configuration
             _parameterLocation = parameterLocation;
         }
 
-        public IInvocationMatcher CreateInvocationInspector()
+        public IInvocationMatcher CreateInvocationInspector(IGetTemplate routeToConfigure)
         {
-            return new ParameterEqualsPredicate<T>(_predicate, _parameterLocation, _parameterName);
+            return new ParameterInGetEqualsPredicate<T>(routeToConfigure, _predicate, _parameterLocation, _parameterName);
+        }
+
+        IInvocationMatcher IPostInvocationConfiguration.CreateInvocationInspector(IPostTemplate routeToConfigure)
+        {
+            return new ParameterInPostEqualsPredicate<T>(routeToConfigure, _predicate, _parameterLocation, _parameterName);
         }
     }
 }

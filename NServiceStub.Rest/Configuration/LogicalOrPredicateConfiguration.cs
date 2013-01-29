@@ -1,21 +1,25 @@
 namespace NServiceStub.Rest.Configuration
 {
-    public class LogicalOrPredicateConfiguration : IRouteInvocationConfiguration
+    public class LogicalOrPredicateConfiguration : IGetOrPostInvocationConfiguration
     {
-        public LogicalOrPredicateConfiguration(IRouteInvocationConfiguration left, IRouteInvocationConfiguration right)
+        public LogicalOrPredicateConfiguration(IGetOrPostInvocationConfiguration left, IGetOrPostInvocationConfiguration right)
         {
             Left = left;
             Right = right;
         }
 
-        public IRouteInvocationConfiguration Left { get; set; }
+        public IGetOrPostInvocationConfiguration Left { get; set; }
 
-        public IRouteInvocationConfiguration Right { get; set; }
+        public IGetOrPostInvocationConfiguration Right { get; set; }
 
-
-        public IInvocationMatcher CreateInvocationInspector()
+        IInvocationMatcher IGetInvocationConfiguration.CreateInvocationInspector(IGetTemplate routeToConfigure)
         {
-            return new LogicalOrOfInvocations(Left.CreateInvocationInspector(), Right.CreateInvocationInspector());
+            return new LogicalOrOfInvocations(Left.CreateInvocationInspector(routeToConfigure), Right.CreateInvocationInspector(routeToConfigure));
+        }
+
+        IInvocationMatcher IPostInvocationConfiguration.CreateInvocationInspector(IPostTemplate routeToConfigure)
+        {
+            return new LogicalOrOfInvocations(Left.CreateInvocationInspector(routeToConfigure), Right.CreateInvocationInspector(routeToConfigure));
         }
     }
 }

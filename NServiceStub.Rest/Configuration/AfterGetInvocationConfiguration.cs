@@ -2,13 +2,13 @@
 
 namespace NServiceStub.Rest.Configuration
 {
-    public class RouteGetConfiguration<R>
+    public class AfterGetInvocationConfiguration<R>
     {
         private readonly IInvocationMatcher _matcher;
-        private readonly IRouteDefinition<R> _route;
+        private readonly IGetTemplate<R> _route;
         private readonly ServiceStub _service;
 
-        public RouteGetConfiguration(IInvocationMatcher matcher, IRouteDefinition<R> route, ServiceStub service)
+        public AfterGetInvocationConfiguration(IInvocationMatcher matcher, IGetTemplate<R> route, ServiceStub service)
         {
             _matcher = matcher;
             _route = route;
@@ -18,7 +18,7 @@ namespace NServiceStub.Rest.Configuration
         public SendAfterEndpointEventConfiguration Returns(R returnValue)
         {
             var sequence = new TriggeredMessageSequence();
-            var inspector = new InvocationTriggeringSequenceOfEvents(_matcher, sequence);
+            var inspector = new GetInvocationTriggeringSequenceOfEvents(_route, _matcher, sequence);
 
             _route.AddReturn(inspector, new ProduceStaticReturnValue<R>(returnValue));
 
@@ -28,7 +28,7 @@ namespace NServiceStub.Rest.Configuration
         public SendAfterEndpointEventConfiguration Returns<T1, T2>(Func<T1, T2, R> returnValueProducer)
         {
             var sequence = new TriggeredMessageSequence();
-            var inspector = new InvocationTriggeringSequenceOfEvents(_matcher, sequence);
+            var inspector = new GetInvocationTriggeringSequenceOfEvents(_route, _matcher, sequence);
 
             _route.AddReturn(inspector, new ProduceDelegateReturnValue<R>(returnValueProducer, new MapQueryStringDelegateHeuristic(_route.Route, returnValueProducer)));
 

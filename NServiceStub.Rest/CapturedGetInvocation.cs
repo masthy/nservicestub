@@ -5,12 +5,12 @@ using System.Reflection;
 
 namespace NServiceStub.Rest
 {
-    public class CapturedRouteInvocation : IMessageInitializerParameterBinder
+    public class CapturedGetInvocation : IMessageInitializerParameterBinder
     {
         private readonly HttpListenerRequest _request;
-        private readonly IRouteDefinition _routeOwningUrl;
+        private readonly IGetTemplate _routeOwningUrl;
 
-        public CapturedRouteInvocation(HttpListenerRequest request, IRouteDefinition routeOwningUrl)
+        public CapturedGetInvocation(HttpListenerRequest request, IGetTemplate routeOwningUrl)
         {
             _request = request;
             _routeOwningUrl = routeOwningUrl;

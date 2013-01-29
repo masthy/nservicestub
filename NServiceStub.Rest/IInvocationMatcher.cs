@@ -4,6 +4,6 @@ namespace NServiceStub.Rest
 {
     public interface IInvocationMatcher
     {
-        bool Matches(HttpListenerRequest request, IRouteDefinition routeOwningUrl);
+        bool Matches(HttpListenerRequest request);
     }
 }

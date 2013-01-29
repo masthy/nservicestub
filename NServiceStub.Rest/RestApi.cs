@@ -13,31 +13,47 @@ namespace NServiceStub.Rest
     {
         private HttpListener _listener;
         private QueryStringParser _parser;
+        private readonly UrlParser _postParser;
         private ServiceStub _service;
 
-        private readonly IList<IRouteDefinition> _routeTable = new List<IRouteDefinition>();
+        private readonly IList<IRouteTemplate> _routeTable = new List<IRouteTemplate>();
 
-        public RestApi(string baseUrl, QueryStringParser parser, ServiceStub service)
+        public RestApi(string baseUrl, QueryStringParser parser, UrlParser postParser, ServiceStub service)
         {
             _parser = parser;
+            _postParser = postParser;
             _service = service;
             _listener = new HttpListener();
             _listener.Prefixes.Add(baseUrl);
             Start();
         }
 
-        public IRouteDefinition<T> AddRouteGet<T>(string queryString)
+        public IPostTemplate AddPost(string url)
         {
-            Route route = _parser.Parse(queryString);
+            Post route = _postParser.Parse(url);
 
-            var routeDefinition = new RouteDefinition<T>(route);
-            _routeTable.Add(routeDefinition);
-            return routeDefinition;
+            var template = new PostTemplate(route);
+            _routeTable.Add(template);
+            return template;
         }
 
-        public RouteConfiguration<R> Configure<R>(IRouteDefinition<R> route)
+        public IGetTemplate<T> AddGet<T>(string queryString)
         {
-            return new RouteConfiguration<R>(route, _service);
+            Get route = _parser.Parse(queryString);
+
+            var template = new GetTemplate<T>(route);
+            _routeTable.Add(template);
+            return template;
+        }
+
+        public GetTemplateConfiguration<R> Configure<R>(IGetTemplate<R> route)
+        {
+            return new GetTemplateConfiguration<R>(route, _service);
+        }
+
+        public PostTemplateConfiguration Configure(IPostTemplate route)
+        {
+            return new PostTemplateConfiguration(route, _service);
         }
 
         private void Start()
@@ -70,12 +86,14 @@ namespace NServiceStub.Rest
 
         private void HandleRequest(IAsyncResult result)
         {
-            if (!_listener.IsListening)
+            var listener = _listener;
+
+            if (listener == null || !listener.IsListening)
                 return;
 
-            HttpListenerContext context = _listener.EndGetContext(result);
+            HttpListenerContext context = listener.EndGetContext(result);
 
-            _listener.BeginGetContext(HandleRequest, null);
+            listener.BeginGetContext(HandleRequest, null);
 
             WriteResponse(context);
         }
@@ -84,7 +102,7 @@ namespace NServiceStub.Rest
         {
             context.Response.ContentEncoding = Encoding.UTF8;
 
-            IRouteDefinition route = _routeTable.FirstOrDefault(definition => definition.Route.Matches(context.Request.RawUrl));
+            IRouteTemplate route = _routeTable.FirstOrDefault(definition => definition.Matches(context.Request));
 
             if (route != null)
             {

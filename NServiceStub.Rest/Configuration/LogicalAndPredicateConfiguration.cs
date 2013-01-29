@@ -3,24 +3,29 @@ using System.Linq;
 
 namespace NServiceStub.Rest.Configuration
 {
-    public class LogicalAndPredicateConfiguration : IRouteInvocationConfiguration
+    public class LogicalAndPredicateConfiguration : IGetOrPostInvocationConfiguration
     {
-        readonly IList<IRouteInvocationConfiguration> _predicates = new List<IRouteInvocationConfiguration>();
+        readonly IList<IGetOrPostInvocationConfiguration> _predicates = new List<IGetOrPostInvocationConfiguration>();
 
-        public LogicalAndPredicateConfiguration(IRouteInvocationConfiguration left, IRouteInvocationConfiguration right)
+        public LogicalAndPredicateConfiguration(IGetOrPostInvocationConfiguration left, IGetOrPostInvocationConfiguration right)
         {
             _predicates.Add(left);
             _predicates.Add(right);
         }
 
-        public IInvocationMatcher CreateInvocationInspector()
+        IInvocationMatcher IGetInvocationConfiguration.CreateInvocationInspector(IGetTemplate routeToConfigure)
         {
-            return new LogicalAndOfInvocations(_predicates.Select(predicate => predicate.CreateInvocationInspector()));
+            return new LogicalAndOfInvocations(_predicates.Select(predicate => predicate.CreateInvocationInspector(routeToConfigure)));
         }
 
-        public void Add(IRouteInvocationConfiguration inspection)
+        public void Add(IGetOrPostInvocationConfiguration inspection)
         {
             _predicates.Add(inspection);
+        }
+
+        IInvocationMatcher IPostInvocationConfiguration.CreateInvocationInspector(IPostTemplate routeToConfigure)
+        {
+            return new LogicalAndOfInvocations(_predicates.Select(predicate => predicate.CreateInvocationInspector(routeToConfigure)));
         }
     }
 }

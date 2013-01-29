@@ -10,7 +10,7 @@ namespace NServiceStub.Rest
         private const string QueryParameterGroupName = "param";
         private const string QueryParameterValueGroupName = "value";
 
-        public Route Parse(string queryString)
+        public Get Parse(string queryString)
         {
             IEnumerator<char> tokenizer = queryString.GetEnumerator();
             tokenizer.MoveNext();
@@ -18,7 +18,7 @@ namespace NServiceStub.Rest
             return ParseRoute(tokenizer);
         }
 
-        private Route ParseRoute(IEnumerator<char> tokenizer)
+        private Get ParseRoute(IEnumerator<char> tokenizer)
         {
             IDictionary<string, string> routeParametersVsNamedGroup = new Dictionary<string, string>();
             IList<string> queryParameters = new List<string>();
@@ -27,7 +27,7 @@ namespace NServiceStub.Rest
 
             routePattern.Append("$");
 
-            return new Route(new Regex(routePattern.ToString()), routeParametersVsNamedGroup, queryParameters, QueryParameterGroupName, QueryParameterValueGroupName);
+            return new Get(new Regex(routePattern.ToString()), routeParametersVsNamedGroup, queryParameters, QueryParameterGroupName, QueryParameterValueGroupName);
         }
 
         private static StringBuilder ParseRoute(IEnumerator<char> tokenizer, StringBuilder routePattern, IDictionary<string, string> routeParametersVsNamedGroup, IList<string> queryParameters)
@@ -84,20 +84,7 @@ namespace NServiceStub.Rest
 
         private static StringBuilder ParseRouteParameter(IEnumerator<char> tokenizer, StringBuilder routePattern, IDictionary<string, string> routeParameters, IList<string> queryParameters)
         {
-            var parameter = new StringBuilder();
-
-            while (tokenizer.Current != '}')
-            {
-                parameter.Append(tokenizer.Current);
-                tokenizer.MoveNext();
-            }
-
-            string param = parameter.ToString();
-            routeParameters.Add(param, param);
-            routePattern.Append(string.Format("(?<{0}>[^/]+)", param));
-
-            if (tokenizer.Current != '}')
-                throw new QueryStringParseException("Expecting } to end route parameter");
+            UrlParseHelpers.ParseSingleRouteParameter(tokenizer, routePattern, routeParameters);
 
             if (tokenizer.MoveNext())
                 return ParseRoute(tokenizer, routePattern, routeParameters, queryParameters);

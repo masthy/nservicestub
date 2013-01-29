@@ -3,19 +3,19 @@ using NServiceStub.Rest.Configuration;
 
 namespace NServiceStub.Rest
 {
-    public class TrueOnAnyInvocationConfiguration : IRouteInvocationConfiguration, IInvocationMatcher
+    public class TrueOnAnyInvocationConfiguration : IGetInvocationConfiguration, IInvocationMatcher
     {
         public static readonly TrueOnAnyInvocationConfiguration Instance = new TrueOnAnyInvocationConfiguration();
 
         private TrueOnAnyInvocationConfiguration()
         {}
 
-        public IInvocationMatcher CreateInvocationInspector()
+        public IInvocationMatcher CreateInvocationInspector(IGetTemplate routeToConfigure)
         {
             return this;
         }
 
-        public bool Matches(HttpListenerRequest request, IRouteDefinition routeOwningUrl)
+        public bool Matches(HttpListenerRequest request)
         {
             return true;
         }

@@ -1,20 +1,25 @@
 ﻿namespace NServiceStub.Rest.Configuration
 {
-    public class LogicalCombinablePredicate : IRouteInvocationConfiguration
+    public class LogicalCombinablePredicate : IGetOrPostInvocationConfiguration
     {
-        private IRouteInvocationConfiguration _lastStep;
+        private IGetOrPostInvocationConfiguration _lastStep;
 
-        public LogicalCombinablePredicate(IRouteInvocationConfiguration lastStep)
+        public LogicalCombinablePredicate(IGetOrPostInvocationConfiguration lastStep)
         {
             _lastStep = lastStep;
         }
 
-        public IInvocationMatcher CreateInvocationInspector()
+        IInvocationMatcher IGetInvocationConfiguration.CreateInvocationInspector(IGetTemplate routeToConfigure)
         {
-            return _lastStep.CreateInvocationInspector();
+            return _lastStep.CreateInvocationInspector(routeToConfigure);
         }
 
-        public LogicalCombinablePredicate And(IRouteInvocationConfiguration inspection)
+        IInvocationMatcher IPostInvocationConfiguration.CreateInvocationInspector(IPostTemplate routeToConfigure)
+        {
+            return _lastStep.CreateInvocationInspector(routeToConfigure);
+        }
+
+        public LogicalCombinablePredicate And(IGetOrPostInvocationConfiguration inspection)
         {
             var andPredicate = _lastStep as LogicalAndPredicateConfiguration;
 
@@ -44,7 +49,7 @@
             return this;
         }
 
-        public IRouteInvocationConfiguration Or(IRouteInvocationConfiguration inspection)
+        public IGetInvocationConfiguration Or(IGetOrPostInvocationConfiguration inspection)
         {
             _lastStep = new LogicalOrPredicateConfiguration(_lastStep, inspection);
 

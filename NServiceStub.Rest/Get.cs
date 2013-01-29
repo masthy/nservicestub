@@ -5,13 +5,13 @@ using System.Text.RegularExpressions;
 
 namespace NServiceStub.Rest
 {
-    public class Route
+    public class Get : IRoute
     {
         private readonly string _queryParameterGroupName;
         private readonly string _queryParameterValueGroupName;
         private readonly Regex _rawUrlMatcher;
 
-        public Route(Regex rawUrlMatcher, IDictionary<string, string> routeParametersVsNamedGroup, IList<string> queryParameters, string queryParameterGroupName, string queryParameterValueGroupName)
+        public Get(Regex rawUrlMatcher, IDictionary<string, string> routeParametersVsNamedGroup, IList<string> queryParameters, string queryParameterGroupName, string queryParameterValueGroupName)
         {
             _rawUrlMatcher = rawUrlMatcher;
             _queryParameterGroupName = queryParameterGroupName;
@@ -22,12 +22,7 @@ namespace NServiceStub.Rest
 
         public object GetHeaderParameterValue(string parameterName, NameValueCollection headers, Type expectedType)
         {
-            string value = headers[parameterName];
-
-            if (value == null)
-                return null;
-
-            return Convert.ChangeType(value, expectedType);
+            return RouteHelpers.GetHeaderParameterValue(parameterName, headers, expectedType);
         }
 
         public object GetQueryParameterValue(string name, string rawUrl, Type expectedType)
@@ -44,11 +39,7 @@ namespace NServiceStub.Rest
 
         public object GetRouteParameterValue(string name, string rawUrl, Type expectedType)
         {
-            string namedGroup = RouteParametersInternal[name];
-
-            Group @group = _rawUrlMatcher.Match(rawUrl).Groups[namedGroup];
-
-            return Convert.ChangeType(@group.Value, expectedType);
+            return RouteHelpers.GetRouteParameterValue(_rawUrlMatcher, RouteParametersInternal, name, rawUrl, expectedType);
         }
 
         public bool Matches(string rawUrl)

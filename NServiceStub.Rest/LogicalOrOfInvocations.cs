@@ -13,9 +13,9 @@ namespace NServiceStub.Rest
             _right = right;
         }
 
-        public bool Matches(HttpListenerRequest request, IRouteDefinition routeOwningUrl)
+        public bool Matches(HttpListenerRequest request)
         {
-            return _left.Matches(request, routeOwningUrl) || _right.Matches(request, routeOwningUrl);
+            return _left.Matches(request) || _right.Matches(request);
         }
     }
 }

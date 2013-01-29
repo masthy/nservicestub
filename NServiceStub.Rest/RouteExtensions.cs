@@ -5,7 +5,7 @@ namespace NServiceStub.Rest
 {
     public static class RouteExtensions
     {
-        public static T GetParameterValue<T>(this Route route, HttpListenerRequest request, string parameterName, ParameterLocation parameterLocation)
+        public static T GetParameterValue<T>(this IRoute route, HttpListenerRequest request, string parameterName, ParameterLocation parameterLocation)
         {
             object parameterValue = route.GetParameterValue(request, typeof(T), parameterName, parameterLocation);
 
@@ -15,12 +15,17 @@ namespace NServiceStub.Rest
                 return (T)parameterValue;
         }
 
-        public static object GetParameterValue(this Route route, HttpListenerRequest request, Type expectedType, string parameterName, ParameterLocation parameterLocation)
+        public static object GetParameterValue(this IRoute route, HttpListenerRequest request, Type expectedType, string parameterName, ParameterLocation parameterLocation)
         {
             switch (parameterLocation)
             {
                 case ParameterLocation.Query:
-                    return route.GetQueryParameterValue(parameterName, request.RawUrl, expectedType);
+                    var getRoute = route as Get;
+
+                    if (getRoute == null)
+                        throw new NotSupportedException("ParameterLocation.Query is only supported for Get routes");
+
+                    return getRoute.GetQueryParameterValue(parameterName, request.RawUrl, expectedType);
                 case ParameterLocation.Route:
                     return route.GetRouteParameterValue(parameterName, request.RawUrl, expectedType);
                 case ParameterLocation.Header:

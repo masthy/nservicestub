@@ -19,7 +19,7 @@ namespace NServiceStub.Rest
             return new ParameterConfiguration<T>(ParameterLocation.Header, name);
         }
 
-        public static IRouteInvocationConfiguration Any()
+        public static IGetInvocationConfiguration Any()
         {
             return TrueOnAnyInvocationConfiguration.Instance;
         }

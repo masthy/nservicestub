@@ -1,6 +1,6 @@
 namespace NServiceStub.Rest.Configuration
 {
-    public class ParameterEqualsValueConfiguration<T> : IRouteInvocationConfiguration
+    public class ParameterEqualsValueConfiguration<T> : IGetOrPostInvocationConfiguration
     {
         private readonly T _expectedValue;
         private readonly string _parameterName;
@@ -13,9 +13,14 @@ namespace NServiceStub.Rest.Configuration
             _parameterLocation = parameterLocation;
         }
 
-        public IInvocationMatcher CreateInvocationInspector()
+        IInvocationMatcher IGetInvocationConfiguration.CreateInvocationInspector(IGetTemplate routeToConfigure)
         {
-            return new ParameterEqualsValue<T>(_expectedValue, _parameterName, _parameterLocation);
+            return new ParameterInGetEqualsValue<T>(routeToConfigure, _expectedValue, _parameterName, _parameterLocation);
+        }
+
+        IInvocationMatcher IPostInvocationConfiguration.CreateInvocationInspector(IPostTemplate routeToConfigure)
+        {
+            return new ParameterInPostEqualsValue<T>(routeToConfigure, _expectedValue, _parameterName, _parameterLocation);
         }
     }
 }

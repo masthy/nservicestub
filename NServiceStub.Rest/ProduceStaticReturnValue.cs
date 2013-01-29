@@ -11,7 +11,7 @@ namespace NServiceStub.Rest
             _returnValue = returnValue;
         }
 
-        public R Produce(HttpListenerRequest request, IRouteDefinition route)
+        public R Produce(HttpListenerRequest request)
         {
             return _returnValue;
         }

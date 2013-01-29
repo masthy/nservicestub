@@ -3,11 +3,11 @@ using System.Net;
 
 namespace NServiceStub.Rest
 {
-    public class RouteDefinition<R> : IRouteDefinition<R>
+    public class GetTemplate<R> : IGetTemplate<R>
     {
         readonly Dictionary<IInvocationMatcher, IInvocationReturnValueProducer<R>> _invocationVsReturnValue = new Dictionary<IInvocationMatcher, IInvocationReturnValueProducer<R>>();
 
-        public RouteDefinition(Route route)
+        public GetTemplate(Get route)
         {
             Route = route;
         }
@@ -21,9 +21,9 @@ namespace NServiceStub.Rest
         {
             foreach (var invationVsReturnValue in _invocationVsReturnValue)
             {
-                if (invationVsReturnValue.Key.Matches(request, this))
+                if (invationVsReturnValue.Key.Matches(request))
                 {
-                    returnValue = invationVsReturnValue.Value.Produce(request, this);
+                    returnValue = invationVsReturnValue.Value.Produce(request);
                     return true;
                 }
             }
@@ -32,6 +32,11 @@ namespace NServiceStub.Rest
             return false;
         }
 
-        public Route Route { get; private set; }
+        public bool Matches(HttpListenerRequest request)
+        {
+            return Route.Matches(request.RawUrl);
+        }
+
+        public Get Route { get; private set; }
     }
 }
