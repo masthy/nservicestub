@@ -1,6 +1,4 @@
-﻿using NServiceStub.Rest.Configuration;
-
-namespace NServiceStub.Rest
+﻿namespace NServiceStub.Rest.Configuration
 {
     public class Parameter
     {

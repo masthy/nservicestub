@@ -1,6 +1,4 @@
-﻿using System.Net;
-
-namespace NServiceStub.Rest
+﻿namespace NServiceStub.Rest
 {
     public class LogicalOrOfInvocations : IInvocationMatcher
     {
@@ -13,7 +11,7 @@ namespace NServiceStub.Rest
             _right = right;
         }
 
-        public bool Matches(HttpListenerRequest request)
+        public bool Matches(RequestWrapper request)
         {
             return _left.Matches(request) || _right.Matches(request);
         }

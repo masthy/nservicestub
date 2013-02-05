@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 
 namespace NServiceStub.Rest
 {
@@ -13,7 +12,7 @@ namespace NServiceStub.Rest
             _predicatesToCombine = predicatesToCombine;
         }
 
-        public bool Matches(HttpListenerRequest request)
+        public bool Matches(RequestWrapper request)
         {
             return _predicatesToCombine.All(predicate => predicate.Matches(request));
         }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net;
 
 namespace NServiceStub.Rest
 {
@@ -18,9 +17,9 @@ namespace NServiceStub.Rest
             _parameterName = parameterName;
         }
 
-        public bool Matches(HttpListenerRequest request)
+        public bool Matches(RequestWrapper request)
         {
-            var parameterValue = _routeOwningUrl.Route.GetParameterValue<T>(request, _parameterName, _parameterLocation);
+            var parameterValue = _routeOwningUrl.Route.GetParameterValue<T>(request.Request, _parameterName, _parameterLocation);
 
             return _predicate(parameterValue);
         }

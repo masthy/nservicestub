@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using NServiceStub.Configuration;
 using NServiceStub.NServiceBus;
 using NServiceStub.Rest;
+using NServiceStub.Rest.Configuration;
 using NUnit.Framework;
 using OrderService.Contracts;
-using NServiceStub.Rest.Configuration;
 
 namespace NServiceStub.IntegrationTests.Rest
 {
@@ -20,15 +21,15 @@ namespace NServiceStub.IntegrationTests.Rest
         {
             MsmqHelpers.Purge("shippingservice");
 
-            var service = Configure.Stub().NServiceBusSerializers().Restful().Create(@".\Private$\orderservice");
+            ServiceStub service = Configure.Stub().NServiceBusSerializers().Restful().Create(@".\Private$\orderservice");
 
             const string BaseUrl = "http://localhost:9101/";
-            var restEndpoint = service.RestEndpoint(BaseUrl);
+            RestApi restEndpoint = service.RestEndpoint(BaseUrl);
 
             IGetTemplate<bool> get = restEndpoint.AddGet<bool>("/list");
 
             restEndpoint.Configure(get).With(Parameter.Any()).Returns(true)
-                .Send<IOrderWasPlaced>(msg => msg.OrderedProduct = "stockings", "shippingservice");
+                        .Send<IOrderWasPlaced>(msg => msg.OrderedProduct = "stockings", "shippingservice");
 
             service.Start();
 
@@ -36,8 +37,7 @@ namespace NServiceStub.IntegrationTests.Rest
 
             Task<string> getAsync = client.GetStringAsync("list");
 
-            getAsync.Wait();
-            string body = getAsync.Result;
+            string result = WaitVerifyNoExceptionsAndGetResult(getAsync);
 
             do
             {
@@ -47,8 +47,70 @@ namespace NServiceStub.IntegrationTests.Rest
             client.Dispose();
             service.Dispose();
 
-            Assert.That(body, Is.EqualTo("true"));
+            Assert.That(result, Is.EqualTo("true"));
             Assert.That(MsmqHelpers.GetMessageCount("shippingservice"), Is.EqualTo(1), "shipping service did not recieve send");
+        }
+
+        [Test]
+        public void Get_SimpleExpectationSetUpInHeaderHeaderVariableIsMissing_ReturnsDefaultValue()
+        {
+            MsmqHelpers.Purge("shippingservice");
+
+            ServiceStub service = Configure.Stub().NServiceBusSerializers().Restful().Create(@".\Private$\orderservice");
+
+            const string BaseUrl = "http://localhost:9101/";
+            RestApi restEndpoint = service.RestEndpoint(BaseUrl);
+
+            IGetTemplate<bool> get = restEndpoint.AddGet<bool>("/list");
+
+            restEndpoint.Configure(get).With(Parameter.HeaderParameter<DateTime>("Today").Equals(dt => dt.Day == 3)).Returns(true)
+                        .Send<IOrderWasPlaced>(msg => msg.OrderedProduct = "stockings", "shippingservice");
+
+            service.Start();
+
+            var client = new HttpClient {BaseAddress = new Uri(BaseUrl)};
+
+            Task<string> getAsync = client.GetStringAsync("list");
+
+            string result = WaitVerifyNoExceptionsAndGetResult(getAsync);
+
+            client.Dispose();
+            service.Dispose();
+
+            Assert.That(result, Is.EqualTo("null"));
+            Assert.That(MsmqHelpers.GetMessageCount("shippingservice"), Is.EqualTo(0), "shipping service recieved events");
+        }
+
+        [Test]
+        public void Get_SimpleExpectationSetUpInHeaderInvokingEndpointAndExpectationAreNotMet_MessageIsNotSentToQueue()
+        {
+            MsmqHelpers.Purge("shippingservice");
+
+            ServiceStub service = Configure.Stub().NServiceBusSerializers().Restful().Create(@".\Private$\orderservice");
+
+            const string BaseUrl = "http://localhost:9101/";
+            RestApi restEndpoint = service.RestEndpoint(BaseUrl);
+
+            IGetTemplate<bool> get = restEndpoint.AddGet<bool>("/list");
+
+            restEndpoint.Configure(get).With(Parameter.HeaderParameter<DateTime>("Today").Equals(dt => dt.Day == 3)).Returns(true)
+                        .Send<IOrderWasPlaced>(msg => msg.OrderedProduct = "stockings", "shippingservice");
+
+            service.Start();
+
+            var client = new HttpClient {BaseAddress = new Uri(BaseUrl)};
+
+            client.DefaultRequestHeaders.Add("Today", new DateTime(2000, 2, 4).ToString());
+
+            Task<string> getAsync = client.GetStringAsync("list");
+
+            string result = WaitVerifyNoExceptionsAndGetResult(getAsync);
+
+            client.Dispose();
+            service.Dispose();
+
+            Assert.That(result, Is.EqualTo("null"));
+            Assert.That(MsmqHelpers.GetMessageCount("shippingservice"), Is.EqualTo(0), "shipping service recieved events");
         }
 
         [Test]
@@ -56,15 +118,15 @@ namespace NServiceStub.IntegrationTests.Rest
         {
             MsmqHelpers.Purge("shippingservice");
 
-            var service = Configure.Stub().NServiceBusSerializers().Restful().Create(@".\Private$\orderservice");
+            ServiceStub service = Configure.Stub().NServiceBusSerializers().Restful().Create(@".\Private$\orderservice");
 
             const string BaseUrl = "http://localhost:9101/";
-            var restEndpoint = service.RestEndpoint(BaseUrl);
+            RestApi restEndpoint = service.RestEndpoint(BaseUrl);
 
             IGetTemplate<bool> get = restEndpoint.AddGet<bool>("/list");
 
             restEndpoint.Configure(get).With(Parameter.HeaderParameter<DateTime>("Today").Equals(dt => dt.Day == 3)).Returns(true)
-                .Send<IOrderWasPlaced>(msg => msg.OrderedProduct = "stockings", "shippingservice");
+                        .Send<IOrderWasPlaced>(msg => msg.OrderedProduct = "stockings", "shippingservice");
 
             service.Start();
 
@@ -74,8 +136,7 @@ namespace NServiceStub.IntegrationTests.Rest
 
             Task<string> getAsync = client.GetStringAsync("list");
 
-            getAsync.Wait();
-            string body = getAsync.Result;
+            string result = WaitVerifyNoExceptionsAndGetResult(getAsync);
 
             do
             {
@@ -85,72 +146,36 @@ namespace NServiceStub.IntegrationTests.Rest
             client.Dispose();
             service.Dispose();
 
-            Assert.That(body, Is.EqualTo("true"));
+            Assert.That(result, Is.EqualTo("true"));
             Assert.That(MsmqHelpers.GetMessageCount("shippingservice"), Is.EqualTo(1), "shipping service did not recieve send");
         }
 
         [Test]
-        public void Get_SimpleExpectationSetUpInHeaderInvokingEndpointAndExpectationAreNotMet_MessageIsNotSentToQueue()
+        public void Get_SimpleExpectationSetUpInvokingEndpointAndExpectationMetInDifferentOrder_RestApiReturnsMatch()
         {
-            MsmqHelpers.Purge("shippingservice");
-
-            var service = Configure.Stub().NServiceBusSerializers().Restful().Create(@".\Private$\orderservice");
+            ServiceStub service = Configure.Stub().NServiceBusSerializers().Restful().Create(@".\Private$\orderservice");
 
             const string BaseUrl = "http://localhost:9101/";
-            var restEndpoint = service.RestEndpoint(BaseUrl);
+            RestApi restEndpoint = service.RestEndpoint(BaseUrl);
 
-            IGetTemplate<bool> get = restEndpoint.AddGet<bool>("/list");
+            IGetTemplate<bool> get = restEndpoint.AddGet<bool>("/order/{id}?foo&bar");
 
-            restEndpoint.Configure(get).With(Parameter.HeaderParameter<DateTime>("Today").Equals(dt => dt.Day == 3)).Returns(true)
-                .Send<IOrderWasPlaced>(msg => msg.OrderedProduct = "stockings", "shippingservice");
+            restEndpoint.Configure(get).With(Parameter.RouteParameter<int>("id").Equals(1)
+                                                      .And(Parameter.QueryParameter<string>("foo").Equals("howdy"))
+                                                      .And(Parameter.QueryParameter<string>("bar").Equals("partner"))).Returns(true);
 
             service.Start();
 
-            var client = new HttpClient { BaseAddress = new Uri(BaseUrl) };
+            var client = new HttpClient {BaseAddress = new Uri(BaseUrl)};
 
-            client.DefaultRequestHeaders.Add("Today", new DateTime(2000, 2, 4).ToString());
+            Task<string> getAsync = client.GetStringAsync("/order/1?bar=partner&foo=howdy");
 
-            Task<string> getAsync = client.GetStringAsync("list");
-
-            getAsync.Wait();
-            string body = getAsync.Result;
+            string result = WaitVerifyNoExceptionsAndGetResult(getAsync);
 
             client.Dispose();
             service.Dispose();
 
-            Assert.That(body, Is.EqualTo("null"));
-            Assert.That(MsmqHelpers.GetMessageCount("shippingservice"), Is.EqualTo(0), "shipping service recieved events");
-        }
-
-        [Test]
-        public void Get_SimpleExpectationSetUpInHeaderHeaderVariableIsMissing_ReturnsDefaultValue()
-        {
-            MsmqHelpers.Purge("shippingservice");
-
-            var service = Configure.Stub().NServiceBusSerializers().Restful().Create(@".\Private$\orderservice");
-
-            const string BaseUrl = "http://localhost:9101/";
-            var restEndpoint = service.RestEndpoint(BaseUrl);
-
-            IGetTemplate<bool> get = restEndpoint.AddGet<bool>("/list");
-
-            restEndpoint.Configure(get).With(Parameter.HeaderParameter<DateTime>("Today").Equals(dt => dt.Day == 3)).Returns(true)
-                .Send<IOrderWasPlaced>(msg => msg.OrderedProduct = "stockings", "shippingservice");
-
-            service.Start();
-
-            var client = new HttpClient { BaseAddress = new Uri(BaseUrl) };
-
-            Task<string> getAsync = client.GetStringAsync("list");
-
-            getAsync.Wait();
-            string body = getAsync.Result;
-
-            client.Dispose();
-            service.Dispose();
-
-            Assert.That(body, Is.EqualTo("null"));
-            Assert.That(MsmqHelpers.GetMessageCount("shippingservice"), Is.EqualTo(0), "shipping service recieved events");
+            Assert.That(result, Is.EqualTo("true"));
         }
 
         [Test]
@@ -158,20 +183,20 @@ namespace NServiceStub.IntegrationTests.Rest
         {
             MsmqHelpers.Purge("shippingservice");
 
-            var service = Configure.Stub().NServiceBusSerializers().Restful().Create(@".\Private$\orderservice");
+            ServiceStub service = Configure.Stub().NServiceBusSerializers().Restful().Create(@".\Private$\orderservice");
 
             const string BaseUrl = "http://localhost:9101/";
-            var restEndpoint = service.RestEndpoint(BaseUrl);
+            RestApi restEndpoint = service.RestEndpoint(BaseUrl);
 
             IGetTemplate<bool> get = restEndpoint.AddGet<bool>("/order/{id}");
 
             restEndpoint.Configure(get).With(Parameter.RouteParameter<int>("id").Equals(1))
-                .Returns(true)
-                .Send<IOrderWasPlaced, int>((msg, id) =>
-                    {
-                        msg.OrderedProduct = "stockings";
-                        msg.OrderNumber = id;
-                    }, "shippingservice");
+                        .Returns(true)
+                        .Send<IOrderWasPlaced, int>((msg, id) =>
+                            {
+                                msg.OrderedProduct = "stockings";
+                                msg.OrderNumber = id;
+                            }, "shippingservice");
 
             service.Start();
 
@@ -179,8 +204,7 @@ namespace NServiceStub.IntegrationTests.Rest
 
             Task<string> getAsync = client.GetStringAsync("/order/1");
 
-            getAsync.Wait();
-            string body = getAsync.Result;
+            string result = WaitVerifyNoExceptionsAndGetResult(getAsync);
 
             do
             {
@@ -190,37 +214,38 @@ namespace NServiceStub.IntegrationTests.Rest
             client.Dispose();
             service.Dispose();
 
-            Assert.That(body, Is.EqualTo("true"));
+            Assert.That(result, Is.EqualTo("true"));
             Assert.That(MsmqHelpers.GetMessageCount("shippingservice"), Is.EqualTo(1), "shipping service did not recieve send");
         }
 
         [Test]
-        public void Get_SimpleExpectationSetUpInvokingEndpointAndExpectationMetInDifferentOrder_RestApiReturnsMatch()
+        public void Post_DoesNotMatchSetup_DoesNotSendMessages()
         {
-            var service = Configure.Stub().NServiceBusSerializers().Restful().Create(@".\Private$\orderservice");
+            // Arrange
+            MsmqHelpers.Purge("shippingservice");
+
+            ServiceStub service = Configure.Stub().NServiceBusSerializers().Restful().Create(@".\Private$\orderservice");
 
             const string BaseUrl = "http://localhost:9101/";
-            var restEndpoint = service.RestEndpoint(BaseUrl);
+            RestApi api = service.RestEndpoint(BaseUrl);
 
-            IGetTemplate<bool> get = restEndpoint.AddGet<bool>("/order/{id}?foo&bar");
-
-            restEndpoint.Configure(get).With(Parameter.RouteParameter<int>("id").Equals(1)
-                .And(Parameter.QueryParameter<string>("foo").Equals("howdy"))
-                .And(Parameter.QueryParameter<string>("bar").Equals("partner"))).Returns(true);
+            IPostTemplate post = api.AddPost("/order/{id}/shares");
+            api.Configure(post).With(Parameter.RouteParameter<int>("id").Equals(1)).Send<IOrderWasPlaced>(msg => { msg.OrderNumber = 1; }, "shippingservice");
 
             service.Start();
 
-            var client = new HttpClient { BaseAddress = new Uri(BaseUrl) };
+            var client = new HttpClient {BaseAddress = new Uri(BaseUrl)};
 
-            Task<string> getAsync = client.GetStringAsync("/order/1?bar=partner&foo=howdy");
+            Task<HttpResponseMessage> postAsync = client.PostAsync("/order/2/shares", new StringContent(""));
 
-            getAsync.Wait();
-            string body = getAsync.Result;
+            WaitVerifyNoExceptions(postAsync);
 
             client.Dispose();
             service.Dispose();
 
-            Assert.That(body, Is.EqualTo("true"));
+            Thread.Sleep(2000);
+
+            Assert.That(MsmqHelpers.GetMessageCount("shippingservice"), Is.EqualTo(0), "shipping service recieved events");
         }
 
         [Test]
@@ -229,25 +254,21 @@ namespace NServiceStub.IntegrationTests.Rest
             // Arrange
             MsmqHelpers.Purge("shippingservice");
 
-            var service = Configure.Stub().NServiceBusSerializers().Restful().Create(@".\Private$\orderservice");
+            ServiceStub service = Configure.Stub().NServiceBusSerializers().Restful().Create(@".\Private$\orderservice");
 
             const string BaseUrl = "http://localhost:9101/";
-            var api = service.RestEndpoint(BaseUrl);
+            RestApi api = service.RestEndpoint(BaseUrl);
 
             IPostTemplate post = api.AddPost("/order/{id}/shares");
-            api.Configure(post).With(Parameter.RouteParameter<int>("id").Equals(1)).Send<IOrderWasPlaced>(msg =>
-                {
-                    msg.OrderNumber = 1;
-                }, "shippingservice");
+            api.Configure(post).With(Parameter.RouteParameter<int>("id").Equals(1)).Send<IOrderWasPlaced>(msg => { msg.OrderNumber = 1; }, "shippingservice");
 
             service.Start();
 
-            var client = new HttpClient { BaseAddress = new Uri(BaseUrl) };
+            var client = new HttpClient {BaseAddress = new Uri(BaseUrl)};
 
             Task<HttpResponseMessage> postAsync = client.PostAsync("/order/1/shares", new StringContent(""));
 
-            postAsync.Wait();
-            var message = postAsync.Result;
+            HttpResponseMessage message = WaitVerifyNoExceptionsAndGetResult(postAsync);
 
             client.Dispose();
             service.Dispose();
@@ -262,36 +283,84 @@ namespace NServiceStub.IntegrationTests.Rest
         }
 
         [Test]
-        public void Post_DoesNotMatchSetup_DoesNotSendMessages()
+        public void Post_PostWitBody_BodyIsBoundToDynamic()
         {
             // Arrange
             MsmqHelpers.Purge("shippingservice");
 
-            var service = Configure.Stub().NServiceBusSerializers().Restful().Create(@".\Private$\orderservice");
+            ServiceStub service = Configure.Stub().NServiceBusSerializers().Restful().Create(@".\Private$\orderservice");
 
             const string BaseUrl = "http://localhost:9101/";
-            var api = service.RestEndpoint(BaseUrl);
+            RestApi api = service.RestEndpoint(BaseUrl);
 
-            IPostTemplate post = api.AddPost("/order/{id}/shares");
-            api.Configure(post).With(Parameter.RouteParameter<int>("id").Equals(1)).Send<IOrderWasPlaced>(msg =>
-            {
-                msg.OrderNumber = 1;
-            }, "shippingservice");
+            IPostTemplate post = api.AddPost("/order");
+            api.Configure(post).With(Body.AsDynamic().IsEqualTo(body => body.orderId == 1));
+
+            service.Start();
+
+            var client = new HttpClient {BaseAddress = new Uri(BaseUrl)};
+
+            Task<HttpResponseMessage> postAsync = client.PostAsync("/order", new StringContent("{\"orderId\":\"1\"}", Encoding.UTF8, "application/json"));
+
+            HttpResponseMessage message = WaitVerifyNoExceptionsAndGetResult(postAsync);
+
+            client.Dispose();
+            service.Dispose();
+
+            Assert.That(message.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+        }
+
+        [Test]
+        public void Post_PostWitBody_BodyIsPassedDownTheChain()
+        {
+            // Arrange
+            MsmqHelpers.Purge("shippingservice");
+
+            ServiceStub service = Configure.Stub().NServiceBusSerializers().Restful().Create(@".\Private$\orderservice");
+
+            const string BaseUrl = "http://localhost:9101/";
+            RestApi api = service.RestEndpoint(BaseUrl);
+
+            IPostTemplate post = api.AddPost("/order");
+            api.Configure(post).With(Body.AsDynamic().IsEqualTo(body => body.orderId == 1))
+                .Send<IOrderWasPlaced, dynamic>((msg, body) =>
+                    {
+                        msg.OrderNumber = body.orderId;
+                    }, "shippingservice");
 
             service.Start();
 
             var client = new HttpClient { BaseAddress = new Uri(BaseUrl) };
 
-            Task<HttpResponseMessage> postAsync = client.PostAsync("/order/2/shares", new StringContent(""));
+            Task<HttpResponseMessage> postAsync = client.PostAsync("/order", new StringContent("{\"orderId\":\"1\"}", Encoding.UTF8, "application/json"));
 
-            postAsync.Wait();
+            HttpResponseMessage message = WaitVerifyNoExceptionsAndGetResult(postAsync);
+
+            do
+            {
+                Thread.Sleep(100);
+            } while (MsmqHelpers.GetMessageCount("shippingservice") == 0);
 
             client.Dispose();
             service.Dispose();
 
-            Thread.Sleep(2000);
-            
-            Assert.That(MsmqHelpers.GetMessageCount("shippingservice"), Is.EqualTo(0), "shipping service recieved events");
+            Assert.That(MsmqHelpers.PickMessageBody("shippingservice"), Is.StringContaining("1"));
+            Assert.That(message.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+        }
+
+        private static T WaitVerifyNoExceptionsAndGetResult<T>(Task<T> task)
+        {
+            WaitVerifyNoExceptions(task);
+
+            T result = task.Result;
+            return result;
+        }
+
+        private static void WaitVerifyNoExceptions(Task task)
+        {
+            task.Wait();
+
+            Assert.That(task.Exception, Is.Null);
         }
     }
 }

@@ -66,6 +66,7 @@ namespace NServiceStub.Rest
         public void Dispose()
         {
             _listener.Stop();
+            _listener.Close();
 
             _listener = null;
             _parser = null;
@@ -91,7 +92,15 @@ namespace NServiceStub.Rest
             if (listener == null || !listener.IsListening)
                 return;
 
-            HttpListenerContext context = listener.EndGetContext(result);
+            HttpListenerContext context;
+            try
+            {
+                context = listener.EndGetContext(result);
+            }
+            catch (Exception)
+            {
+                return;
+            }
 
             listener.BeginGetContext(HandleRequest, null);
 
@@ -102,12 +111,14 @@ namespace NServiceStub.Rest
         {
             context.Response.ContentEncoding = Encoding.UTF8;
 
-            IRouteTemplate route = _routeTable.FirstOrDefault(definition => definition.Matches(context.Request));
+            var requestWrapper = new RequestWrapper(context.Request);
+
+            IRouteTemplate route = _routeTable.FirstOrDefault(definition => definition.Matches(requestWrapper));
 
             if (route != null)
             {
                 object returnValue;
-                if (!route.TryInvocation(context.Request, out returnValue))
+                if (!route.TryInvocation(requestWrapper, out returnValue))
                 {
                     returnValue = null;
                 }

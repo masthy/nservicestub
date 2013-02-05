@@ -1,6 +1,4 @@
-﻿using System.Net;
-
-namespace NServiceStub.Rest
+﻿namespace NServiceStub.Rest
 {
     public class GetInvocationTriggeringSequenceOfEvents : IInvocationMatcher
     {
@@ -15,11 +13,11 @@ namespace NServiceStub.Rest
             _sequence = sequence;
         }
 
-        public bool Matches(HttpListenerRequest request)
+        public bool Matches(RequestWrapper request)
         {
             if (_matcher.Matches(request))
             {
-                _sequence.TriggerNewSequenceOfEvents(new CapturedGetInvocation(request, _routeOwningUrl));
+                _sequence.TriggerNewSequenceOfEvents(new CapturedGetInvocation(request.Request, _routeOwningUrl));
                 return true;
             }
             else

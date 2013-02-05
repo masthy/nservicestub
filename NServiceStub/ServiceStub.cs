@@ -30,9 +30,15 @@ namespace NServiceStub
             Sequences.Add(sequence);
         }
 
-        public void RequestStop()
+        public void Stop()
         {
             RequestedStop = true;
+
+            if (_runningTask != null)
+            {
+                _runningTask.Wait();
+                _runningTask = null;
+            }
         }
 
         public MessageSequenceConfiguration Setup()
@@ -45,9 +51,7 @@ namespace NServiceStub
             if (_runningTask != null)
                 throw new InvalidOperationException("The service stub has already been started");
 
-            _runningTask = new Task(RunInternal);
-
-            _runningTask.Start();
+            _runningTask = Task.Factory.StartNew(RunInternal);
         }
 
         public IExtensionBoundToStubLifecycle[] Extensions { get; set; }
@@ -74,6 +78,9 @@ namespace NServiceStub
 
         protected virtual void Dispose(bool disposing)
         {
+            if (IsRunning)
+                Stop();
+
             _messagePickerFactory.Release(MessagePicker);
             _stufferFactory.Release(MessageStuffer);
 

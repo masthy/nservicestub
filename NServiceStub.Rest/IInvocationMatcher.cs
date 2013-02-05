@@ -4,6 +4,6 @@ namespace NServiceStub.Rest
 {
     public interface IInvocationMatcher
     {
-        bool Matches(HttpListenerRequest request);
+        bool Matches(RequestWrapper request);
     }
 }

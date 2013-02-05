@@ -1,7 +1,4 @@
-﻿using System.Net;
-using NServiceStub.Rest.Configuration;
-
-namespace NServiceStub.Rest
+﻿namespace NServiceStub.Rest.Configuration
 {
     public class TrueOnAnyInvocationConfiguration : IGetInvocationConfiguration, IInvocationMatcher
     {
@@ -15,7 +12,7 @@ namespace NServiceStub.Rest
             return this;
         }
 
-        public bool Matches(HttpListenerRequest request)
+        public bool Matches(RequestWrapper request)
         {
             return true;
         }

@@ -234,7 +234,7 @@ namespace NServiceStub.IntegrationTests
 
         private static void StopService(ServiceStub service)
         {
-            service.RequestStop();
+            service.Stop();
             while (service.IsRunning)
             {}
 
