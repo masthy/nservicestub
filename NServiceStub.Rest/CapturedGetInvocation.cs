@@ -30,7 +30,7 @@ namespace NServiceStub.Rest
 
             if (destinationArguments.Length > 1)
             {
-                var mapper = new MapQueryStringDelegateHeuristic(_routeOwningUrl.Route, messageInitializer, 1);
+                var mapper = new MapRequestToDelegateHeuristic(_routeOwningUrl.Route, messageInitializer, 1);
 
                 argumentValues.AddRange(mapper.Map(_request));
             }

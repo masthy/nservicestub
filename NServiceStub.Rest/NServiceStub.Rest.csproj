@@ -79,13 +79,14 @@
     <Compile Include="IRouteTemplate.cs" />
     <Compile Include="LogicalAndOfInvocations.cs" />
     <Compile Include="LogicalOrOfInvocations.cs" />
-    <Compile Include="MapQueryStringDelegateHeuristic.cs" />
+    <Compile Include="MapRequestToDelegateHeuristic.cs" />
     <Compile Include="Configuration\Parameter.cs" />
     <Compile Include="ParameterInGetEqualsPredicate.cs" />
     <Compile Include="ParameterInGetEqualsValue.cs" />
     <Compile Include="ParameterInPostEqualsPredicate.cs" />
     <Compile Include="ParameterInPostEqualsValue.cs" />
     <Compile Include="ParameterLocation.cs" />
+    <Compile Include="ParameterNameAndLocation.cs" />
     <Compile Include="Post.cs" />
     <Compile Include="PostInvocationTriggeringSequenceOfEvents.cs" />
     <Compile Include="PostTemplate.cs" />

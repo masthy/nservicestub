@@ -6,9 +6,9 @@ namespace NServiceStub.Rest
     public class ProduceDelegateReturnValue<R> : IInvocationReturnValueProducer<R>
     {
         private readonly Delegate _returnValueProducer;
-        private readonly MapQueryStringDelegateHeuristic _mapper;
+        private readonly MapRequestToDelegateHeuristic _mapper;
 
-        public ProduceDelegateReturnValue(Delegate returnValueProducer, MapQueryStringDelegateHeuristic mapper)
+        public ProduceDelegateReturnValue(Delegate returnValueProducer, MapRequestToDelegateHeuristic mapper)
         {
             _returnValueProducer = returnValueProducer;
             _mapper = mapper;

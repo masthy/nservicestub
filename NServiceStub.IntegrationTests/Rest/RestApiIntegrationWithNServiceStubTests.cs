@@ -82,6 +82,43 @@ namespace NServiceStub.IntegrationTests.Rest
         }
 
         [Test]
+        public void Get_SimpleExpectationSetUpInHeader_HeaderParameterPassedDownTheInheritanceChain()
+        {
+            MsmqHelpers.Purge("shippingservice");
+
+            ServiceStub service = Configure.Stub().NServiceBusSerializers().Restful().Create(@".\Private$\orderservice");
+
+            const string BaseUrl = "http://localhost:9101/";
+            RestApi restEndpoint = service.RestEndpoint(BaseUrl);
+
+            IGetTemplate<bool> get = restEndpoint.AddGet<bool>("/list");
+
+            restEndpoint.Configure(get).With(Parameter.HeaderParameter<DateTime>("Today").Equals(dt => dt.Day == 3)).Returns(true)
+                        .Send<IOrderWasPlaced, DateTime>((msg, today) => msg.OrderedProduct = today.ToString(), "shippingservice");
+
+            service.Start();
+
+            var client = new HttpClient { BaseAddress = new Uri(BaseUrl) };
+
+            client.DefaultRequestHeaders.Add("Today", new DateTime(2000, 1, 3).ToString());
+
+            Task<string> getAsync = client.GetStringAsync("list");
+
+            string result = WaitVerifyNoExceptionsAndGetResult(getAsync);
+
+            client.Dispose();
+            service.Dispose();
+
+            do
+            {
+                Thread.Sleep(100);
+            } while (MsmqHelpers.GetMessageCount("shippingservice") == 0);
+
+            Assert.That(result, Is.EqualTo("true"));
+            Assert.That(MsmqHelpers.PickMessageBody("shippingservice"), Is.StringContaining(new DateTime(2000, 1, 3).ToString()), "shipping service recieved events");
+        }
+
+        [Test]
         public void Get_SimpleExpectationSetUpInHeaderInvokingEndpointAndExpectationAreNotMet_MessageIsNotSentToQueue()
         {
             MsmqHelpers.Purge("shippingservice");

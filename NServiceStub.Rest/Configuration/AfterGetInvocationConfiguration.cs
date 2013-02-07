@@ -30,7 +30,7 @@ namespace NServiceStub.Rest.Configuration
             var sequence = new TriggeredMessageSequence();
             var inspector = new GetInvocationTriggeringSequenceOfEvents(_route, _matcher, sequence);
 
-            _route.AddReturn(inspector, new ProduceDelegateReturnValue<R>(returnValueProducer, new MapQueryStringDelegateHeuristic(_route.Route, returnValueProducer)));
+            _route.AddReturn(inspector, new ProduceDelegateReturnValue<R>(returnValueProducer, new MapRequestToDelegateHeuristic(_route.Route, returnValueProducer)));
 
             return new SendAfterEndpointEventConfiguration(sequence, _service);
         }
