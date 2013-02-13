@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Messaging;
+using System.Threading;
 
 namespace NServiceStub.IntegrationTests
 {
@@ -17,6 +18,15 @@ namespace NServiceStub.IntegrationTests
         {
             var queue = new MessageQueue(string.Format(@".\Private$\{0}", queueName));
             return queue;
+        }
+
+        public static void WaitForMessages(string queueName)
+        {
+            do
+            {
+                Thread.Sleep(100);
+            } while (GetMessageCount(queueName) == 0);
+            
         }
 
         public static int GetMessageCount(string queueName)

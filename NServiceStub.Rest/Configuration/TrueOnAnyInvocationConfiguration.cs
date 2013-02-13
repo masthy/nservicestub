@@ -7,7 +7,7 @@
         private TrueOnAnyInvocationConfiguration()
         {}
 
-        public IInvocationMatcher CreateInvocationInspector(IGetTemplate routeToConfigure)
+        public IInvocationMatcher CreateInvocationInspector(IRouteTemplate routeToConfigure)
         {
             return this;
         }

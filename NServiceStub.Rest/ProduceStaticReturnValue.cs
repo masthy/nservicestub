@@ -2,16 +2,16 @@
 
 namespace NServiceStub.Rest
 {
-    public class ProduceStaticReturnValue<R> : IInvocationReturnValueProducer<R>
+    public class ProduceStaticReturnValue : IInvocationReturnValueProducer
     {
-        private readonly R _returnValue;
+        private readonly object _returnValue;
 
-        public ProduceStaticReturnValue(R returnValue)
+        public ProduceStaticReturnValue(object returnValue)
         {
             _returnValue = returnValue;
         }
 
-        public R Produce(HttpListenerRequest request)
+        public object Produce(HttpListenerRequest request)
         {
             return _returnValue;
         }

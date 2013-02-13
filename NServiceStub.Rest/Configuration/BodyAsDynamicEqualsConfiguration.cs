@@ -2,7 +2,7 @@
 
 namespace NServiceStub.Rest.Configuration
 {
-    public class BodyAsDynamicEqualsConfiguration : IPostInvocationConfiguration
+    public class BodyAsDynamicEqualsConfiguration : IGetOrPostInvocationConfiguration
     {
         private readonly Func<dynamic, bool> _bodyEvaluator;
 
@@ -11,7 +11,7 @@ namespace NServiceStub.Rest.Configuration
             _bodyEvaluator = bodyEvaluator;
         }
 
-        public IInvocationMatcher CreateInvocationInspector(IPostTemplate routeToConfigure)
+        public IInvocationMatcher CreateInvocationInspector(IRouteTemplate routeToConfigure)
         {
             return new BodyAsDynamicEqualsPredicate(_bodyEvaluator);
         }

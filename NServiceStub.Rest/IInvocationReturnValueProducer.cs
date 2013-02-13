@@ -2,8 +2,8 @@
 
 namespace NServiceStub.Rest
 {
-    public interface IInvocationReturnValueProducer<R>
+    public interface IInvocationReturnValueProducer
     {
-        R Produce(HttpListenerRequest request);
+        object Produce(HttpListenerRequest request);
     }
 }

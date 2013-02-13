@@ -10,7 +10,7 @@ namespace NServiceStub.Rest
         private const string QueryParameterGroupName = "param";
         private const string QueryParameterValueGroupName = "value";
 
-        public Get Parse(string queryString)
+        public Route Parse(string queryString)
         {
             IEnumerator<char> tokenizer = queryString.GetEnumerator();
             tokenizer.MoveNext();
@@ -18,7 +18,7 @@ namespace NServiceStub.Rest
             return ParseRoute(tokenizer);
         }
 
-        private Get ParseRoute(IEnumerator<char> tokenizer)
+        private Route ParseRoute(IEnumerator<char> tokenizer)
         {
             IDictionary<string, string> routeParametersVsNamedGroup = new Dictionary<string, string>();
             IList<string> queryParameters = new List<string>();
@@ -27,7 +27,7 @@ namespace NServiceStub.Rest
 
             routePattern.Append("$");
 
-            return new Get(new Regex(routePattern.ToString()), routeParametersVsNamedGroup, queryParameters, QueryParameterGroupName, QueryParameterValueGroupName);
+            return new Route(new Regex(routePattern.ToString()), routeParametersVsNamedGroup, queryParameters, QueryParameterGroupName, QueryParameterValueGroupName);
         }
 
         private static StringBuilder ParseRoute(IEnumerator<char> tokenizer, StringBuilder routePattern, IDictionary<string, string> routeParametersVsNamedGroup, IList<string> queryParameters)

@@ -8,9 +8,9 @@ namespace NServiceStub.Rest
     public class CapturedGetInvocation : IMessageInitializerParameterBinder
     {
         private readonly HttpListenerRequest _request;
-        private readonly IGetTemplate _routeOwningUrl;
+        private readonly IRouteTemplate _routeOwningUrl;
 
-        public CapturedGetInvocation(HttpListenerRequest request, IGetTemplate routeOwningUrl)
+        public CapturedGetInvocation(HttpListenerRequest request, IRouteTemplate routeOwningUrl)
         {
             _request = request;
             _routeOwningUrl = routeOwningUrl;

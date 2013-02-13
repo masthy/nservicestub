@@ -13,47 +13,45 @@ namespace NServiceStub.Rest
     {
         private HttpListener _listener;
         private QueryStringParser _parser;
-        private readonly UrlParser _postParser;
         private ServiceStub _service;
 
         private readonly IList<IRouteTemplate> _routeTable = new List<IRouteTemplate>();
 
-        public RestApi(string baseUrl, QueryStringParser parser, UrlParser postParser, ServiceStub service)
+        public RestApi(string baseUrl, QueryStringParser parser, ServiceStub service)
         {
             _parser = parser;
-            _postParser = postParser;
             _service = service;
             _listener = new HttpListener();
             _listener.Prefixes.Add(baseUrl);
             Start();
         }
 
-        public IPostTemplate AddPost(string url)
+        public IRouteTemplate AddPost(string url)
         {
-            Post route = _postParser.Parse(url);
+            Route route = _parser.Parse(url);
 
-            var template = new PostTemplate(route);
+            var template = new RouteTemplate<object>(route);
             _routeTable.Add(template);
             return template;
         }
 
-        public IGetTemplate<T> AddGet<T>(string queryString)
+        public IRouteTemplate<T> AddGet<T>(string queryString)
         {
-            Get route = _parser.Parse(queryString);
+            Route route = _parser.Parse(queryString);
 
-            var template = new GetTemplate<T>(route);
+            var template = new RouteTemplate<T>(route);
             _routeTable.Add(template);
             return template;
         }
 
-        public GetTemplateConfiguration<R> Configure<R>(IGetTemplate<R> route)
+        public InvokeGetConfiguration<R> Configure<R>(IRouteTemplate<R> route)
         {
-            return new GetTemplateConfiguration<R>(route, _service);
+            return new InvokeGetConfiguration<R>(route, _service);
         }
 
-        public PostTemplateConfiguration Configure(IPostTemplate route)
+        public InvokePostConfiguration Configure(IRouteTemplate route)
         {
-            return new PostTemplateConfiguration(route, _service);
+            return new InvokePostConfiguration(route, _service);
         }
 
         private void Start()

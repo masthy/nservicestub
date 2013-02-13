@@ -12,14 +12,14 @@ namespace NServiceStub.Rest.Configuration
 
         public IGetOrPostInvocationConfiguration Right { get; set; }
 
-        IInvocationMatcher IGetInvocationConfiguration.CreateInvocationInspector(IGetTemplate routeToConfigure)
+        IInvocationMatcher IGetInvocationConfiguration.CreateInvocationInspector(IRouteTemplate routeToConfigure)
         {
-            return new LogicalOrOfInvocations(Left.CreateInvocationInspector(routeToConfigure), Right.CreateInvocationInspector(routeToConfigure));
+            return new LogicalOrOfInvocations(Left.AsGetConfiguration().CreateInvocationInspector(routeToConfigure), Right.AsGetConfiguration().CreateInvocationInspector(routeToConfigure));
         }
 
-        IInvocationMatcher IPostInvocationConfiguration.CreateInvocationInspector(IPostTemplate routeToConfigure)
+        IInvocationMatcher IPostInvocationConfiguration.CreateInvocationInspector(IRouteTemplate routeToConfigure)
         {
-            return new LogicalOrOfInvocations(Left.CreateInvocationInspector(routeToConfigure), Right.CreateInvocationInspector(routeToConfigure));
+            return new LogicalOrOfInvocations(Left.AsPostConfiguration().CreateInvocationInspector(routeToConfigure), Right.AsPostConfiguration().CreateInvocationInspector(routeToConfigure));
         }
     }
 }

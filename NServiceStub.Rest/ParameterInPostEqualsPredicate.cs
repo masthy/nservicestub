@@ -4,12 +4,12 @@ namespace NServiceStub.Rest
 {
     public class ParameterInPostEqualsPredicate<T> : IInvocationMatcher
     {
-        private readonly IPostTemplate _routeOwningUrl;
+        private readonly IRouteTemplate _routeOwningUrl;
         private readonly Func<T, bool> _predicate;
         private readonly ParameterLocation _parameterLocation;
         private readonly string _parameterName;
 
-        public ParameterInPostEqualsPredicate(IPostTemplate routeOwningUrl, Func<T, bool> predicate, ParameterLocation parameterLocation, string parameterName)
+        public ParameterInPostEqualsPredicate(IRouteTemplate routeOwningUrl, Func<T, bool> predicate, ParameterLocation parameterLocation, string parameterName)
         {
             _routeOwningUrl = routeOwningUrl;
             _predicate = predicate;

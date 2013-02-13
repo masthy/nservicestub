@@ -26,7 +26,7 @@ namespace NServiceStub.IntegrationTests.Rest
             const string BaseUrl = "http://localhost:9101/";
             RestApi restEndpoint = service.RestEndpoint(BaseUrl);
 
-            IGetTemplate<bool> get = restEndpoint.AddGet<bool>("/list");
+            IRouteTemplate<bool> get = restEndpoint.AddGet<bool>("/list");
 
             restEndpoint.Configure(get).With(Parameter.Any()).Returns(true)
                         .Send<IOrderWasPlaced>(msg => msg.OrderedProduct = "stockings", "shippingservice");
@@ -61,7 +61,7 @@ namespace NServiceStub.IntegrationTests.Rest
             const string BaseUrl = "http://localhost:9101/";
             RestApi restEndpoint = service.RestEndpoint(BaseUrl);
 
-            IGetTemplate<bool> get = restEndpoint.AddGet<bool>("/list");
+            IRouteTemplate<bool> get = restEndpoint.AddGet<bool>("/list");
 
             restEndpoint.Configure(get).With(Parameter.HeaderParameter<DateTime>("Today").Equals(dt => dt.Day == 3)).Returns(true)
                         .Send<IOrderWasPlaced>(msg => msg.OrderedProduct = "stockings", "shippingservice");
@@ -91,7 +91,7 @@ namespace NServiceStub.IntegrationTests.Rest
             const string BaseUrl = "http://localhost:9101/";
             RestApi restEndpoint = service.RestEndpoint(BaseUrl);
 
-            IGetTemplate<bool> get = restEndpoint.AddGet<bool>("/list");
+            IRouteTemplate<bool> get = restEndpoint.AddGet<bool>("/list");
 
             restEndpoint.Configure(get).With(Parameter.HeaderParameter<DateTime>("Today").Equals(dt => dt.Day == 3)).Returns(true)
                         .Send<IOrderWasPlaced, DateTime>((msg, today) => msg.OrderedProduct = today.ToString(), "shippingservice");
@@ -128,7 +128,7 @@ namespace NServiceStub.IntegrationTests.Rest
             const string BaseUrl = "http://localhost:9101/";
             RestApi restEndpoint = service.RestEndpoint(BaseUrl);
 
-            IGetTemplate<bool> get = restEndpoint.AddGet<bool>("/list");
+            IRouteTemplate<bool> get = restEndpoint.AddGet<bool>("/list");
 
             restEndpoint.Configure(get).With(Parameter.HeaderParameter<DateTime>("Today").Equals(dt => dt.Day == 3)).Returns(true)
                         .Send<IOrderWasPlaced>(msg => msg.OrderedProduct = "stockings", "shippingservice");
@@ -160,7 +160,7 @@ namespace NServiceStub.IntegrationTests.Rest
             const string BaseUrl = "http://localhost:9101/";
             RestApi restEndpoint = service.RestEndpoint(BaseUrl);
 
-            IGetTemplate<bool> get = restEndpoint.AddGet<bool>("/list");
+            IRouteTemplate<bool> get = restEndpoint.AddGet<bool>("/list");
 
             restEndpoint.Configure(get).With(Parameter.HeaderParameter<DateTime>("Today").Equals(dt => dt.Day == 3)).Returns(true)
                         .Send<IOrderWasPlaced>(msg => msg.OrderedProduct = "stockings", "shippingservice");
@@ -195,7 +195,7 @@ namespace NServiceStub.IntegrationTests.Rest
             const string BaseUrl = "http://localhost:9101/";
             RestApi restEndpoint = service.RestEndpoint(BaseUrl);
 
-            IGetTemplate<bool> get = restEndpoint.AddGet<bool>("/order/{id}?foo&bar");
+            IRouteTemplate<bool> get = restEndpoint.AddGet<bool>("/order/{id}?foo&bar");
 
             restEndpoint.Configure(get).With(Parameter.RouteParameter<int>("id").Equals(1)
                                                       .And(Parameter.QueryParameter<string>("foo").Equals("howdy"))
@@ -225,7 +225,7 @@ namespace NServiceStub.IntegrationTests.Rest
             const string BaseUrl = "http://localhost:9101/";
             RestApi restEndpoint = service.RestEndpoint(BaseUrl);
 
-            IGetTemplate<bool> get = restEndpoint.AddGet<bool>("/order/{id}");
+            IRouteTemplate<bool> get = restEndpoint.AddGet<bool>("/order/{id}");
 
             restEndpoint.Configure(get).With(Parameter.RouteParameter<int>("id").Equals(1))
                         .Returns(true)
@@ -266,7 +266,7 @@ namespace NServiceStub.IntegrationTests.Rest
             const string BaseUrl = "http://localhost:9101/";
             RestApi api = service.RestEndpoint(BaseUrl);
 
-            IPostTemplate post = api.AddPost("/order/{id}/shares");
+            IRouteTemplate post = api.AddPost("/order/{id}/shares");
             api.Configure(post).With(Parameter.RouteParameter<int>("id").Equals(1)).Send<IOrderWasPlaced>(msg => { msg.OrderNumber = 1; }, "shippingservice");
 
             service.Start();
@@ -296,7 +296,7 @@ namespace NServiceStub.IntegrationTests.Rest
             const string BaseUrl = "http://localhost:9101/";
             RestApi api = service.RestEndpoint(BaseUrl);
 
-            IPostTemplate post = api.AddPost("/order/{id}/shares");
+            IRouteTemplate post = api.AddPost("/order/{id}/shares");
             api.Configure(post).With(Parameter.RouteParameter<int>("id").Equals(1)).Send<IOrderWasPlaced>(msg => { msg.OrderNumber = 1; }, "shippingservice");
 
             service.Start();
@@ -322,7 +322,6 @@ namespace NServiceStub.IntegrationTests.Rest
         [Test]
         public void Post_PostWitBody_BodyIsBoundToDynamic()
         {
-            // Arrange
             MsmqHelpers.Purge("shippingservice");
 
             ServiceStub service = Configure.Stub().NServiceBusSerializers().Restful().Create(@".\Private$\orderservice");
@@ -330,8 +329,8 @@ namespace NServiceStub.IntegrationTests.Rest
             const string BaseUrl = "http://localhost:9101/";
             RestApi api = service.RestEndpoint(BaseUrl);
 
-            IPostTemplate post = api.AddPost("/order");
-            api.Configure(post).With(Body.AsDynamic().IsEqualTo(body => body.orderId == 1));
+            IRouteTemplate post = api.AddPost("/order");
+            api.Configure(post).With(Body.AsDynamic().IsEqualTo(body => body.orderId == 1)).Returns(2);
 
             service.Start();
 
@@ -341,14 +340,18 @@ namespace NServiceStub.IntegrationTests.Rest
 
             HttpResponseMessage message = WaitVerifyNoExceptionsAndGetResult(postAsync);
 
+            Task<string> readAsStringAsync = message.Content.ReadAsStringAsync();
+            readAsStringAsync.Wait();
+
             client.Dispose();
             service.Dispose();
 
             Assert.That(message.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(readAsStringAsync.Result, Is.EqualTo("2"));
         }
 
         [Test]
-        public void Post_PostWitBody_BodyIsPassedDownTheChain()
+        public void Post_PostWitBodyAndRouteParameters_BodyAndParametersBound()
         {
             // Arrange
             MsmqHelpers.Purge("shippingservice");
@@ -358,7 +361,38 @@ namespace NServiceStub.IntegrationTests.Rest
             const string BaseUrl = "http://localhost:9101/";
             RestApi api = service.RestEndpoint(BaseUrl);
 
-            IPostTemplate post = api.AddPost("/order");
+            IRouteTemplate post = api.AddPost("/order/{id}");
+            api.Configure(post).With(Body.AsDynamic().IsEqualTo(body => body.orderId == 1).And(Parameter.RouteParameter<int>("id").Equals(2))).Returns(3);
+
+            service.Start();
+
+            var client = new HttpClient { BaseAddress = new Uri(BaseUrl) };
+
+            Task<HttpResponseMessage> postAsync = client.PostAsync("/order/2", new StringContent("{\"orderId\":\"1\"}", Encoding.UTF8, "application/json"));
+
+            HttpResponseMessage message = WaitVerifyNoExceptionsAndGetResult(postAsync);
+
+            Task<string> readAsStringAsync = message.Content.ReadAsStringAsync();
+            readAsStringAsync.Wait();
+
+            client.Dispose();
+            service.Dispose();
+
+            Assert.That(message.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(readAsStringAsync.Result, Is.EqualTo("3"));
+        }
+
+        [Test]
+        public void Post_PostWitBody_BodyIsPassedDownTheChain()
+        {
+            MsmqHelpers.Purge("shippingservice");
+
+            ServiceStub service = Configure.Stub().NServiceBusSerializers().Restful().Create(@".\Private$\orderservice");
+
+            const string BaseUrl = "http://localhost:9101/";
+            RestApi api = service.RestEndpoint(BaseUrl);
+
+            IRouteTemplate post = api.AddPost("/order");
             api.Configure(post).With(Body.AsDynamic().IsEqualTo(body => body.orderId == 1))
                 .Send<IOrderWasPlaced, dynamic>((msg, body) =>
                     {
@@ -373,10 +407,7 @@ namespace NServiceStub.IntegrationTests.Rest
 
             HttpResponseMessage message = WaitVerifyNoExceptionsAndGetResult(postAsync);
 
-            do
-            {
-                Thread.Sleep(100);
-            } while (MsmqHelpers.GetMessageCount("shippingservice") == 0);
+            MsmqHelpers.WaitForMessages("shippingservice");
 
             client.Dispose();
             service.Dispose();

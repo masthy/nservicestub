@@ -2,11 +2,11 @@
 {
     public class GetInvocationTriggeringSequenceOfEvents : IInvocationMatcher
     {
-        private readonly IGetTemplate _routeOwningUrl;
+        private readonly IRouteTemplate _routeOwningUrl;
         private readonly IInvocationMatcher _matcher;
         private readonly TriggeredMessageSequence _sequence;
 
-        public GetInvocationTriggeringSequenceOfEvents(IGetTemplate routeOwningUrl, IInvocationMatcher matcher, TriggeredMessageSequence sequence)
+        public GetInvocationTriggeringSequenceOfEvents(IRouteTemplate routeOwningUrl, IInvocationMatcher matcher, TriggeredMessageSequence sequence)
         {
             _routeOwningUrl = routeOwningUrl;
             _matcher = matcher;

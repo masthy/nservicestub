@@ -15,12 +15,12 @@ namespace NServiceStub.Rest.Configuration
             _parameterLocation = parameterLocation;
         }
 
-        public IInvocationMatcher CreateInvocationInspector(IGetTemplate routeToConfigure)
+        public IInvocationMatcher CreateInvocationInspector(IRouteTemplate routeToConfigure)
         {
             return new ParameterInGetEqualsPredicate<T>(routeToConfigure, _predicate, _parameterLocation, _parameterName);
         }
 
-        IInvocationMatcher IPostInvocationConfiguration.CreateInvocationInspector(IPostTemplate routeToConfigure)
+        IInvocationMatcher IPostInvocationConfiguration.CreateInvocationInspector(IRouteTemplate routeToConfigure)
         {
             return new ParameterInPostEqualsPredicate<T>(routeToConfigure, _predicate, _parameterLocation, _parameterName);
         }

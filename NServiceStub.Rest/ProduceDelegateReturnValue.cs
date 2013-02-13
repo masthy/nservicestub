@@ -3,7 +3,7 @@ using System.Net;
 
 namespace NServiceStub.Rest
 {
-    public class ProduceDelegateReturnValue<R> : IInvocationReturnValueProducer<R>
+    public class ProduceDelegateReturnValue : IInvocationReturnValueProducer
     {
         private readonly Delegate _returnValueProducer;
         private readonly MapRequestToDelegateHeuristic _mapper;
@@ -14,9 +14,9 @@ namespace NServiceStub.Rest
             _mapper = mapper;
         }
 
-        public R Produce(HttpListenerRequest request)
+        public object Produce(HttpListenerRequest request)
         {
-            return (R)_returnValueProducer.DynamicInvoke(_mapper.Map(request));
+            return _returnValueProducer.DynamicInvoke(_mapper.Map(request));
         }
     }
 }

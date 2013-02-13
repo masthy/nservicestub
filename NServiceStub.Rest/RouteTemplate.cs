@@ -1,17 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace NServiceStub.Rest
 {
-    public class GetTemplate<R> : IGetTemplate<R>
+    public class RouteTemplate<R> : IRouteTemplate<R>
     {
-        readonly Dictionary<IInvocationMatcher, IInvocationReturnValueProducer<R>> _invocationVsReturnValue = new Dictionary<IInvocationMatcher, IInvocationReturnValueProducer<R>>();
+        readonly Dictionary<IInvocationMatcher, IInvocationReturnValueProducer> _invocationVsReturnValue = new Dictionary<IInvocationMatcher, IInvocationReturnValueProducer>();
 
-        public GetTemplate(Get route)
+        public RouteTemplate(Route route)
         {
             Route = route;
         }
 
-        public void AddReturn(IInvocationMatcher invocation, IInvocationReturnValueProducer<R> returnValue)
+        public void AddReturn(IInvocationMatcher invocation, IInvocationReturnValueProducer returnValue)
         {
             _invocationVsReturnValue.Add(invocation, returnValue);
         }
@@ -36,6 +37,6 @@ namespace NServiceStub.Rest
             return Route.Matches(request.Request.RawUrl);
         }
 
-        public Get Route { get; private set; }
+        public Route Route { get; private set; }
     }
 }

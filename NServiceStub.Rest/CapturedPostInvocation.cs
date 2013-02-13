@@ -7,9 +7,9 @@ namespace NServiceStub.Rest
     public class CapturedPostInvocation : IMessageInitializerParameterBinder
     {
         private readonly RequestWrapper _request;
-        private readonly IPostTemplate _routeOwningUrl;
+        private readonly IRouteTemplate _routeOwningUrl;
 
-        public CapturedPostInvocation(RequestWrapper request, IPostTemplate routeOwningUrl)
+        public CapturedPostInvocation(RequestWrapper request, IRouteTemplate routeOwningUrl)
         {
             _request = request;
             _routeOwningUrl = routeOwningUrl;

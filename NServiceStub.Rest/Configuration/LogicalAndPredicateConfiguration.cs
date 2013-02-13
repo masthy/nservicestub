@@ -13,9 +13,9 @@ namespace NServiceStub.Rest.Configuration
             _predicates.Add(right);
         }
 
-        IInvocationMatcher IGetInvocationConfiguration.CreateInvocationInspector(IGetTemplate routeToConfigure)
+        IInvocationMatcher IGetInvocationConfiguration.CreateInvocationInspector(IRouteTemplate routeToConfigure)
         {
-            return new LogicalAndOfInvocations(_predicates.Select(predicate => predicate.CreateInvocationInspector(routeToConfigure)));
+            return new LogicalAndOfInvocations(_predicates.Select(predicate => predicate.AsGetConfiguration().CreateInvocationInspector(routeToConfigure)));
         }
 
         public void Add(IGetOrPostInvocationConfiguration inspection)
@@ -23,9 +23,9 @@ namespace NServiceStub.Rest.Configuration
             _predicates.Add(inspection);
         }
 
-        IInvocationMatcher IPostInvocationConfiguration.CreateInvocationInspector(IPostTemplate routeToConfigure)
+        IInvocationMatcher IPostInvocationConfiguration.CreateInvocationInspector(IRouteTemplate routeToConfigure)
         {
-            return new LogicalAndOfInvocations(_predicates.Select(predicate => predicate.CreateInvocationInspector(routeToConfigure)));
+            return new LogicalAndOfInvocations(_predicates.Select(predicate => predicate.AsPostConfiguration().CreateInvocationInspector(routeToConfigure)));
         }
     }
 }

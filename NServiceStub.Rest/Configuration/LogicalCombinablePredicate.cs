@@ -9,14 +9,14 @@
             _lastStep = lastStep;
         }
 
-        IInvocationMatcher IGetInvocationConfiguration.CreateInvocationInspector(IGetTemplate routeToConfigure)
+        IInvocationMatcher IGetInvocationConfiguration.CreateInvocationInspector(IRouteTemplate routeToConfigure)
         {
-            return _lastStep.CreateInvocationInspector(routeToConfigure);
+            return _lastStep.AsGetConfiguration().CreateInvocationInspector(routeToConfigure);
         }
 
-        IInvocationMatcher IPostInvocationConfiguration.CreateInvocationInspector(IPostTemplate routeToConfigure)
+        IInvocationMatcher IPostInvocationConfiguration.CreateInvocationInspector(IRouteTemplate routeToConfigure)
         {
-            return _lastStep.CreateInvocationInspector(routeToConfigure);
+            return _lastStep.AsPostConfiguration().CreateInvocationInspector(routeToConfigure);
         }
 
         public LogicalCombinablePredicate And(IGetOrPostInvocationConfiguration inspection)

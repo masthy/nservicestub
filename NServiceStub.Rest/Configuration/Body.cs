@@ -12,9 +12,9 @@ namespace NServiceStub.Rest.Configuration
 
     public class AsDynamicConfiguration
     {
-        public IPostInvocationConfiguration IsEqualTo(Func<dynamic, bool> bodyEvaluator)
+        public LogicalCombinablePredicate IsEqualTo(Func<dynamic, bool> bodyEvaluator)
         {
-            return new BodyAsDynamicEqualsConfiguration(bodyEvaluator);
+            return new LogicalCombinablePredicate(new BodyAsDynamicEqualsConfiguration(bodyEvaluator));
         }        
     }
 }

@@ -2,6 +2,6 @@
 {
     public interface IPostInvocationConfiguration
     {
-        IInvocationMatcher CreateInvocationInspector(IPostTemplate routeToConfigure);         
+        IInvocationMatcher CreateInvocationInspector(IRouteTemplate routeToConfigure);         
     }
 }

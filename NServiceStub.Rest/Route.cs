@@ -5,13 +5,13 @@ using System.Text.RegularExpressions;
 
 namespace NServiceStub.Rest
 {
-    public class Get : IRoute
+    public class Route : IRoute
     {
         private readonly string _queryParameterGroupName;
         private readonly string _queryParameterValueGroupName;
         private readonly Regex _rawUrlMatcher;
 
-        public Get(Regex rawUrlMatcher, IDictionary<string, string> routeParametersVsNamedGroup, IList<string> queryParameters, string queryParameterGroupName, string queryParameterValueGroupName)
+        public Route(Regex rawUrlMatcher, IDictionary<string, string> routeParametersVsNamedGroup, IList<string> queryParameters, string queryParameterGroupName, string queryParameterValueGroupName)
         {
             _rawUrlMatcher = rawUrlMatcher;
             _queryParameterGroupName = queryParameterGroupName;

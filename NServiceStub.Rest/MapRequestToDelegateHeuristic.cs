@@ -10,13 +10,13 @@ namespace NServiceStub.Rest
 {
     public class MapRequestToDelegateHeuristic
     {
-        private readonly Get _source;
+        private readonly Route _source;
         private readonly Delegate _destination;
         private readonly int _skipNumberOfDestinationArguments;
 
         private List<KeyValuePair<Type, ParameterNameAndLocation>> _map;
 
-        public MapRequestToDelegateHeuristic(Get source, Delegate destination, int skipNumberOfDestinationArguments = 0)
+        public MapRequestToDelegateHeuristic(Route source, Delegate destination, int skipNumberOfDestinationArguments = 0)
         {
             _source = source;
             _destination = destination;
@@ -39,7 +39,7 @@ namespace NServiceStub.Rest
             return argumentValues;
         }
 
-        private List<KeyValuePair<Type, ParameterNameAndLocation>> BuildMap(Get source, Delegate destination, NameValueCollection headers, int skipNumberOfDestinationArguments)
+        private List<KeyValuePair<Type, ParameterNameAndLocation>> BuildMap(Route source, Delegate destination, NameValueCollection headers, int skipNumberOfDestinationArguments)
         {
             ParameterInfo[] requiredArguments = destination.Method.GetParameters();
             var map = new List<KeyValuePair<Type, ParameterNameAndLocation>>();
@@ -64,7 +64,7 @@ namespace NServiceStub.Rest
             return map;
         }
 
-        private void MapArgumentsByPosition(Get source, ParameterInfo[] requiredArguments, NameValueCollection headers, int skipNumberOfDestinationArguments, List<KeyValuePair<Type, ParameterNameAndLocation>> map)
+        private void MapArgumentsByPosition(Route source, ParameterInfo[] requiredArguments, NameValueCollection headers, int skipNumberOfDestinationArguments, List<KeyValuePair<Type, ParameterNameAndLocation>> map)
         {
             if ((requiredArguments.Length - skipNumberOfDestinationArguments) != source.QueryParameters.Count() + source.RouteParameters.Count())
                 throw new InvalidOperationException("Either use parameter names mathing the query and route parameters or specify as many parameters as the combined number of route and query variables");
@@ -100,7 +100,7 @@ namespace NServiceStub.Rest
             }
         }
 
-        private bool MapByArgumentName(Get source, ParameterInfo argument, NameValueCollection headers, IList<KeyValuePair<Type, ParameterNameAndLocation>> map)
+        private bool MapByArgumentName(Route source, ParameterInfo argument, NameValueCollection headers, IList<KeyValuePair<Type, ParameterNameAndLocation>> map)
         {
             string argumentName = argument.Name;
 

@@ -5,12 +5,12 @@ namespace NServiceStub.Rest
 {
     public class ParameterInGetEqualsPredicate<T> : IInvocationMatcher
     {
-        private readonly IGetTemplate _routeOwningUrl;
+        private readonly IRouteTemplate _routeOwningUrl;
         private readonly Func<T, bool> _predicate;
         private readonly ParameterLocation _parameterLocation;
         private readonly string _parameterName;
 
-        public ParameterInGetEqualsPredicate(IGetTemplate routeOwningUrl, Func<T, bool> predicate, ParameterLocation parameterLocation, string parameterName)
+        public ParameterInGetEqualsPredicate(IRouteTemplate routeOwningUrl, Func<T, bool> predicate, ParameterLocation parameterLocation, string parameterName)
         {
             _routeOwningUrl = routeOwningUrl;
             _predicate = predicate;

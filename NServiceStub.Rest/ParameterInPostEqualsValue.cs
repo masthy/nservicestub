@@ -4,12 +4,12 @@ namespace NServiceStub.Rest
 {
     public class ParameterInPostEqualsValue<T> : IInvocationMatcher
     {
-        private readonly IPostTemplate _routeOwningUrl;
+        private readonly IRouteTemplate _routeOwningUrl;
         private readonly T _expectedValue;
         private readonly string _parameterName;
         private readonly ParameterLocation _parameterLocation;
 
-        public ParameterInPostEqualsValue(IPostTemplate routeOwningUrl, T expectedValue, string parameterName, ParameterLocation parameterLocation)
+        public ParameterInPostEqualsValue(IRouteTemplate routeOwningUrl, T expectedValue, string parameterName, ParameterLocation parameterLocation)
         {
             if (parameterLocation == ParameterLocation.Query)
                 throw new ArgumentOutOfRangeException("parameterLocation", "Query parameters not supported");

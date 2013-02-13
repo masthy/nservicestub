@@ -11,7 +11,6 @@ namespace NServiceStub.Rest.Configuration
         {
             container.Register(Component.For<IRestStubFactory>().AsFactory().Forward<IExtensionBoundToStubLifecycle>().LifeStyle.Transient);
             container.Register(Component.For<QueryStringParser>());
-            container.Register(Component.For<UrlParser>());
             container.Register(Component.For<RestApi>().LifeStyle.Transient);
         }
     }
