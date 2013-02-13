@@ -5,12 +5,12 @@ using System.Reflection;
 
 namespace NServiceStub.Rest
 {
-    public class CapturedGetInvocation : IMessageInitializerParameterBinder
+    public class CapturedRouteInvocation : IMessageInitializerParameterBinder
     {
-        private readonly HttpListenerRequest _request;
+        private readonly RequestWrapper _request;
         private readonly IRouteTemplate _routeOwningUrl;
 
-        public CapturedGetInvocation(HttpListenerRequest request, IRouteTemplate routeOwningUrl)
+        public CapturedRouteInvocation(RequestWrapper request, IRouteTemplate routeOwningUrl)
         {
             _request = request;
             _routeOwningUrl = routeOwningUrl;
@@ -30,9 +30,17 @@ namespace NServiceStub.Rest
 
             if (destinationArguments.Length > 1)
             {
-                var mapper = new MapRequestToDelegateHeuristic(_routeOwningUrl.Route, messageInitializer, 1);
+                int requestOffset = 1;
 
-                argumentValues.AddRange(mapper.Map(_request));
+                if (destinationArguments[1].ParameterType == typeof(object) && destinationArguments[1].Name == "body")
+                {
+                    requestOffset++;
+                    argumentValues.Add(_request.NegotiateAndDeserializeMethodBody());
+                }
+
+                var mapper = new MapRequestToDelegateHeuristic(_routeOwningUrl.Route, messageInitializer, requestOffset);
+
+                argumentValues.AddRange(mapper.Map(_request.Request));
             }
             return argumentValues.ToArray();
         }

@@ -18,7 +18,7 @@ namespace NServiceStub.Rest.Configuration
         public SendAfterEndpointEventConfiguration Returns(R returnValue)
         {
             var sequence = new TriggeredMessageSequence();
-            var inspector = new GetInvocationTriggeringSequenceOfEvents(_route, _matcher, sequence);
+            var inspector = new RouteInvocationTriggeringSequenceOfEvents(_route, _matcher, sequence);
 
             _route.AddReturn(inspector, new ProduceStaticReturnValue(returnValue));
 
@@ -28,7 +28,7 @@ namespace NServiceStub.Rest.Configuration
         public SendAfterEndpointEventConfiguration Returns<T1, T2>(Func<T1, T2, R> returnValueProducer)
         {
             var sequence = new TriggeredMessageSequence();
-            var inspector = new GetInvocationTriggeringSequenceOfEvents(_route, _matcher, sequence);
+            var inspector = new RouteInvocationTriggeringSequenceOfEvents(_route, _matcher, sequence);
 
             _route.AddReturn(inspector, new ProduceDelegateReturnValue(returnValueProducer, new MapRequestToDelegateHeuristic(_route.Route, returnValueProducer)));
 

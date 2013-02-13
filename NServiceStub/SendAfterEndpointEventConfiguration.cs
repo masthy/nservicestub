@@ -27,5 +27,12 @@ namespace NServiceStub
 
             return ConfigurationStepCreator.Create(_componentBeingConfigured, _sequenceBeingConfigured, msgInitializer, destinationQueue);
         }
+
+        public SenderConfiguration Send<TMsg, TParam1, TParam2>(Action<TMsg, TParam1, TParam2> msgInitializer, string destinationQueue) where TMsg : class
+        {
+            _componentBeingConfigured.AddSequence(_sequenceBeingConfigured);
+
+            return ConfigurationStepCreator.Create(_componentBeingConfigured, _sequenceBeingConfigured, msgInitializer, destinationQueue);
+        }
     }
 }

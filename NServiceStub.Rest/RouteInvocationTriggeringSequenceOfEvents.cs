@@ -1,12 +1,12 @@
 ﻿namespace NServiceStub.Rest
 {
-    public class GetInvocationTriggeringSequenceOfEvents : IInvocationMatcher
+    public class RouteInvocationTriggeringSequenceOfEvents : IInvocationMatcher
     {
         private readonly IRouteTemplate _routeOwningUrl;
         private readonly IInvocationMatcher _matcher;
         private readonly TriggeredMessageSequence _sequence;
 
-        public GetInvocationTriggeringSequenceOfEvents(IRouteTemplate routeOwningUrl, IInvocationMatcher matcher, TriggeredMessageSequence sequence)
+        public RouteInvocationTriggeringSequenceOfEvents(IRouteTemplate routeOwningUrl, IInvocationMatcher matcher, TriggeredMessageSequence sequence)
         {
             _routeOwningUrl = routeOwningUrl;
             _matcher = matcher;
@@ -17,7 +17,7 @@
         {
             if (_matcher.Matches(request))
             {
-                _sequence.TriggerNewSequenceOfEvents(new CapturedGetInvocation(request.Request, _routeOwningUrl));
+                _sequence.TriggerNewSequenceOfEvents(new CapturedRouteInvocation(request, _routeOwningUrl));
                 return true;
             }
             else

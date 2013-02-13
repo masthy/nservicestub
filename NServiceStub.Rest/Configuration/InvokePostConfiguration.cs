@@ -14,7 +14,7 @@
         public ReturnFromPostInvocationConfiguration With(IPostInvocationConfiguration configuration)
         {
             var sequence = new TriggeredMessageSequence();
-            var inspector = new PostInvocationTriggeringSequenceOfEvents(_route, configuration.CreateInvocationInspector(_route), sequence);
+            var inspector = new RouteInvocationTriggeringSequenceOfEvents(_route, configuration.CreateInvocationInspector(_route), sequence);
 
             var returnValueProxy = new NullOrInvocationReturnValueProducer();
             _route.AddReturn(inspector, returnValueProxy);

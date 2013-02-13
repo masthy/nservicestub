@@ -50,8 +50,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CapturedPostInvocation.cs" />
-    <Compile Include="CapturedGetInvocation.cs" />
+    <Compile Include="CapturedRouteInvocation.cs" />
     <Compile Include="Configuration\BodyAsDynamicEqualsConfiguration.cs" />
     <Compile Include="BodyAsDynamicEqualsPredicate.cs" />
     <Compile Include="Configuration\Bootstrapper.cs" />
@@ -74,7 +73,6 @@
     <Compile Include="Configuration\ReturnFromPostInvocationConfiguration.cs" />
     <Compile Include="IInvocationMatcher.cs" />
     <Compile Include="IInvocationReturnValueProducer.cs" />
-    <Compile Include="GetInvocationTriggeringSequenceOfEvents.cs" />
     <Compile Include="IRestStubFactory.cs" />
     <Compile Include="IRoute.cs" />
     <Compile Include="IRouteTemplate.cs" />
@@ -88,7 +86,6 @@
     <Compile Include="ParameterInPostEqualsValue.cs" />
     <Compile Include="ParameterLocation.cs" />
     <Compile Include="ParameterNameAndLocation.cs" />
-    <Compile Include="PostInvocationTriggeringSequenceOfEvents.cs" />
     <Compile Include="PostTemplate.cs" />
     <Compile Include="Configuration\InvokePostConfiguration.cs" />
     <Compile Include="ProduceDelegateReturnValue.cs" />
@@ -96,6 +93,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueryStringParseException.cs" />
     <Compile Include="RequestWrapper.cs" />
+    <Compile Include="RouteInvocationTriggeringSequenceOfEvents.cs" />
     <Compile Include="UrlParseHelpers.cs" />
     <Compile Include="QueryStringParser.cs" />
     <Compile Include="RestApi.cs" />

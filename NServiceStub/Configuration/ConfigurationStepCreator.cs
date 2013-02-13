@@ -27,5 +27,13 @@ namespace NServiceStub.Configuration
 
             return new SenderConfiguration(componentBeingConfigured, sequenceBeingConfigured, nextStep);
         }
+
+        public static SenderConfiguration Create<TMsg, TParam1, TParam2>(ServiceStub componentBeingConfigured, IStepConfigurableMessageSequence sequenceBeingConfigured, Action<TMsg, TParam1, TParam2> msgInitializer, string destinationQueue)
+        {
+            var nextStep = new BindParametersAndSendMessage<TMsg>(componentBeingConfigured.MessageStuffer, destinationQueue, msgInitializer);
+            sequenceBeingConfigured.SetNextStep(nextStep);
+
+            return new SenderConfiguration(componentBeingConfigured, sequenceBeingConfigured, nextStep);
+        }
     }
 }

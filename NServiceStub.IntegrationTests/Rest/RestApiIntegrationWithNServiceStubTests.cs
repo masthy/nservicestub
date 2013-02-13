@@ -351,7 +351,7 @@ namespace NServiceStub.IntegrationTests.Rest
         }
 
         [Test]
-        public void Post_PostWitBodyAndRouteParameters_BodyAndParametersBound()
+        public void Post_PostWitBodyAndRouteParameters_BodyAndParametersFromRequestAreBound()
         {
             // Arrange
             MsmqHelpers.Purge("shippingservice");
@@ -413,6 +413,45 @@ namespace NServiceStub.IntegrationTests.Rest
             service.Dispose();
 
             Assert.That(MsmqHelpers.PickMessageBody("shippingservice"), Is.StringContaining("1"));
+            Assert.That(message.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+        }
+
+        [Test]
+        public void Post_PostWitBodyAndRouteParameter_BodyAndRouteParameterIsPassedDownTheChain()
+        {
+            MsmqHelpers.Purge("shippingservice");
+
+            ServiceStub service = Configure.Stub().NServiceBusSerializers().Restful().Create(@".\Private$\orderservice");
+
+            const string BaseUrl = "http://localhost:9101/";
+            RestApi api = service.RestEndpoint(BaseUrl);
+
+            IRouteTemplate post = api.AddPost("/order/{id}");
+
+            api.Configure(post).With(Body.AsDynamic().IsEqualTo(body => body.product == "socks"))
+                .Send<IOrderWasPlaced, dynamic, int>((msg, body, id) =>
+                {
+                    msg.OrderedProduct = body.product;
+                    msg.OrderNumber = id;
+                }, "shippingservice");
+
+            service.Start();
+
+            var client = new HttpClient { BaseAddress = new Uri(BaseUrl) };
+
+            Task<HttpResponseMessage> postAsync = client.PostAsync("/order/2", new StringContent("{\"product\":\"socks\"}", Encoding.UTF8, "application/json"));
+
+            HttpResponseMessage message = WaitVerifyNoExceptionsAndGetResult(postAsync);
+
+            MsmqHelpers.WaitForMessages("shippingservice");
+
+            client.Dispose();
+            service.Dispose();
+
+            object actual = MsmqHelpers.PickMessageBody("shippingservice");
+
+            Assert.That(actual, Is.StringContaining("socks"));
+            Assert.That(actual, Is.StringContaining("2"));
             Assert.That(message.StatusCode, Is.EqualTo(HttpStatusCode.OK));
         }
 
