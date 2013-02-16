@@ -2,6 +2,7 @@
 
 namespace OrderService.Contracts
 {
+    [ServiceKnownType("GetCommandTypes", typeof(CommandRegistry))]
     [ServiceContract]
     public interface IOrderService
     {
@@ -10,5 +11,8 @@ namespace OrderService.Contracts
 
         [OperationContract]
         void CancelOrder(string product);
+
+        [OperationContract]
+        void ExecuteCommand(Command command);
     }
 }

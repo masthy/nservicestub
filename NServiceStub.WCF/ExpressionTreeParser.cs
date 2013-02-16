@@ -38,15 +38,13 @@ namespace NServiceStub.WCF
                 {
                     if (parameterExpression.Method.Name == "Equals")
                     {
-                        Expression expression = parameterExpression.Arguments[0];
-                        Delegate @delegate = (expression as LambdaExpression).Compile();
-                        matchers.Add(obj => (bool)@delegate.DynamicInvoke(obj));
+                        AddEqualsMatcher(parameterExpression, matchers);
                     }
                     else if (parameterExpression.Method.Name == "Any")
                     {
                         Type acceptedType = parameterExpression.Method.GetGenericArguments()[0];
 
-                        if (acceptedType == typeof(object) || acceptedType == argument.Type)
+                        if (acceptedType == typeof(object))
                             matchers.Add(obj => true);
                         else
                         {
@@ -71,6 +69,27 @@ namespace NServiceStub.WCF
             }
 
             return new InvocationMatcher(matchers.ToArray(), serviceMethod.Method);
+        }
+
+        private static void AddEqualsMatcher(MethodCallExpression parameterExpression, List<Func<object, bool>> matchers)
+        {
+            Expression expression = parameterExpression.Arguments[0];
+            Delegate @delegate = (expression as LambdaExpression).Compile();
+
+            ParameterInfo[] parameters = @delegate.Method.GetParameters();
+            if (parameters.Length == 2 && parameters[1].ParameterType.IsClass && parameters[1].ParameterType != typeof(string))
+            {
+                matchers.Add(obj =>
+                    {
+                        Type parameterType = @delegate.Method.GetParameters()[1].ParameterType;
+                        if (obj != null && !parameterType.IsInstanceOfType(obj))
+                            return false;
+
+                        return (bool)@delegate.DynamicInvoke(obj);
+                    });
+            }
+            else
+                matchers.Add(obj => (bool)@delegate.DynamicInvoke(obj));
         }
     }
 }

@@ -49,6 +49,90 @@ namespace NServiceStub.IntegrationTests.WCF
         }
 
         [Test]
+        public void SimpleExpectationSetUp_UsingServiceKnownType_HandledAndMessageIsSentToQueue()
+        {
+            MsmqHelpers.Purge("shippingservice");
+
+            var service = Configure.Stub().NServiceBusSerializers().WcfEndPoints().Create(@".\Private$\orderservice");
+
+            var proxy = service.WcfEndPoint<IOrderService>("http://localhost:9101/orderservice");
+
+            proxy.Setup(s => s.ExecuteCommand(Parameter.Any<DeleteOrder>()))
+               .Send<IOrderWasPlaced>(msg => msg.OrderedProduct = "stockings", "shippingservice");
+
+            service.Start();
+
+            using (var factory = new ChannelFactory<IOrderService>(new BasicHttpBinding(), "http://localhost:9101/orderservice"))
+            {
+                IOrderService channel = factory.CreateChannel();
+
+                channel.ExecuteCommand(new DeleteOrder());
+            }
+
+            MsmqHelpers.WaitForMessages("shippingservice");
+
+            service.Dispose();
+
+            Assert.That(MsmqHelpers.GetMessageCount("shippingservice"), Is.EqualTo(1), "shipping service did not recieve send");
+        }
+
+        [Test]
+        public void SimpleExpectationSetUp_UsingServiceKnownType2_HandledAndMessageIsSentToQueue()
+        {
+            MsmqHelpers.Purge("shippingservice");
+
+            var service = Configure.Stub().NServiceBusSerializers().WcfEndPoints().Create(@".\Private$\orderservice");
+
+            var proxy = service.WcfEndPoint<IOrderService>("http://localhost:9101/orderservice");
+
+            proxy.Setup(s => s.ExecuteCommand(Parameter.Equals<DeleteOrder>(command => command.OrderNumber == 1)))
+               .Send<IOrderWasPlaced>(msg => msg.OrderedProduct = "stockings", "shippingservice");
+
+            service.Start();
+
+            using (var factory = new ChannelFactory<IOrderService>(new BasicHttpBinding(), "http://localhost:9101/orderservice"))
+            {
+                IOrderService channel = factory.CreateChannel();
+
+                channel.ExecuteCommand(new DoSomethingWithOrder());
+                channel.ExecuteCommand(new DeleteOrder());
+                channel.ExecuteCommand(new DeleteOrder{OrderNumber = 1});
+            }
+
+            MsmqHelpers.WaitForMessages("shippingservice");
+
+            service.Dispose();
+
+            Assert.That(MsmqHelpers.GetMessageCount("shippingservice"), Is.EqualTo(1), "shipping service did not recieve send");
+        }
+
+        [Test]
+        public void SimpleExpectationSetUp_UsingServiceKnownTypeAndInvokedWithWrongSignature_DoesNotHandleMessage()
+        {
+            MsmqHelpers.Purge("shippingservice");
+
+            var service = Configure.Stub().NServiceBusSerializers().WcfEndPoints().Create(@".\Private$\orderservice");
+
+            var proxy = service.WcfEndPoint<IOrderService>("http://localhost:9101/orderservice");
+
+            proxy.Setup(s => s.ExecuteCommand(Parameter.Any<DeleteOrder>()))
+               .Send<IOrderWasPlaced>(msg => msg.OrderedProduct = "stockings", "shippingservice");
+
+            service.Start();
+
+            using (var factory = new ChannelFactory<IOrderService>(new BasicHttpBinding(), "http://localhost:9101/orderservice"))
+            {
+                IOrderService channel = factory.CreateChannel();
+
+                channel.ExecuteCommand(new DoSomethingWithOrder());
+            }
+
+            service.Dispose();
+
+            Assert.That(MsmqHelpers.GetMessageCount("shippingservice"), Is.EqualTo(0), "shipping service recieved message");
+        }
+
+        [Test]
         public void SimpleExpectationSetUp_BindingInputToReturnValue_InvocationValuesArePassedToReturn()
         {
             var service = Configure.Stub().NServiceBusSerializers().WcfEndPoints().Create(@".\Private$\orderservice");
