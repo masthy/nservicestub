@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using NServiceStub.Configuration;
 
@@ -108,22 +109,30 @@ namespace NServiceStub
             var executionContext = new SequenceExecutionContext(executingSequences, Queue, MessagePicker);
 
             IList<IMessageSequence> doneSequences = new List<IMessageSequence>();
-            while (executingSequences.Count > 0 && !RequestedStop)
+
+            while (executingSequences.Count > 0 && !(RequestedStop && !executingSequences.Any(sequence => sequence is INonRepeatingMessageSequence)))
             {
-                doneSequences.Clear();
-
-                foreach (IMessageSequence sequence in executingSequences)
-                {
-                    sequence.ExecuteNextStep(executionContext);
-
-                    if (sequence.Done)
-                        doneSequences.Add(sequence);
-                }
+                ExecuteAStepAndCheckIfAnySequencesAreDone(doneSequences, executingSequences, executionContext);
 
                 foreach (IMessageSequence messageSequence in doneSequences)
                 {
                     executingSequences.Remove(messageSequence);
                 }
+            }
+        }
+
+        private static void ExecuteAStepAndCheckIfAnySequencesAreDone(IList<IMessageSequence> doneSequences, List<IMessageSequence> executingSequences, SequenceExecutionContext executionContext)
+        {
+            doneSequences.Clear();
+
+            foreach (IMessageSequence sequence in executingSequences)
+            {
+                sequence.ExecuteNextStep(executionContext);
+
+                var nonRepeatingSequence = sequence as INonRepeatingMessageSequence;
+
+                if (nonRepeatingSequence != null && nonRepeatingSequence.Done)
+                    doneSequences.Add(sequence);
             }
         }
 

@@ -1,6 +1,6 @@
 ﻿namespace NServiceStub
 {
-    public class MessageSequence : IStepConfigurableMessageSequence
+    public class MessageSequence : IStepConfigurableMessageSequence, INonRepeatingMessageSequence
     {
         private readonly StepChain _chain = new StepChain();
 

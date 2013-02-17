@@ -38,8 +38,6 @@ namespace NServiceStub
 
         }
 
-        public bool Done { get; set; }
-
         public VerifyExpectation Trigger
         {
             get { return _trigger; }

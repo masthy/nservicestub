@@ -51,8 +51,6 @@ namespace NServiceStub
             }
         }
 
-        public bool Done { get; set; }
-
         public void ReplaceStep(IStep stepToReplace, IStep replacement)
         {
             _sequenceOfEvents.ReplaceStep(stepToReplace, replacement);

@@ -120,7 +120,6 @@ namespace NServiceStub.IntegrationTests
 
             // Act
             service.Start();
-            while (MsmqHelpers.GetMessageCount("shippingservice") == 0) { }
             StopService(service);
 
             // Assert
@@ -142,8 +141,28 @@ namespace NServiceStub.IntegrationTests
 
             // Act
             service.Start();
-            while (MsmqHelpers.GetMessageCount("shippingservice") < 2) { }
             StopService(service);
+
+            // Assert
+            Assert.That(MsmqHelpers.GetMessageCount("shippingservice"), Is.EqualTo(2), "shipping service did not recieve send");
+        }
+
+        [Test]
+        public void Stop_MultipleSequences_WaitsUntilMessagesAreSent()
+        {
+            // Arrange
+            MsmqHelpers.Purge("shippingservice");
+
+            ServiceStub service = Configure.Stub().NServiceBusSerializers().Create(@".\Private$\orderservice");
+
+            service.Setup()
+                   .Send<IOrderWasPlaced>(msg => msg.OrderedProduct = "stockings", "shippingservice");
+            service.Setup()
+                   .Send<IOrderWasPlaced>(msg => msg.OrderedProduct = "stockings", "shippingservice");
+
+            // Act
+            service.Start();
+            service.Stop();
 
             // Assert
             Assert.That(MsmqHelpers.GetMessageCount("shippingservice"), Is.EqualTo(2), "shipping service did not recieve send");
@@ -162,7 +181,6 @@ namespace NServiceStub.IntegrationTests
 
             // Act
             service.Start();
-            while (MsmqHelpers.GetMessageCount("shippingservice") < 10) { }
             StopService(service);
 
             // Assert
