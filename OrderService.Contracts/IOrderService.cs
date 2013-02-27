@@ -13,6 +13,9 @@ namespace OrderService.Contracts
         void CancelOrder(string product);
 
         [OperationContract]
+        Date WhenWasOrderLastPlaced();
+
+        [OperationContract]
         void ExecuteCommand(Command command);
     }
 }

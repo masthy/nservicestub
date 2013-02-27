@@ -44,6 +44,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -54,11 +55,13 @@
   <ItemGroup>
     <Compile Include="Command.cs" />
     <Compile Include="CommandRegistry.cs" />
+    <Compile Include="Date.cs" />
     <Compile Include="DeleteOrder.cs" />
     <Compile Include="DoSomethingWithOrder.cs" />
     <Compile Include="IOrderService.cs" />
     <Compile Include="IOrderWasPlaced.cs" />
     <Compile Include="IPlaceAnOrder.cs" />
+    <Compile Include="OrderStatus.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

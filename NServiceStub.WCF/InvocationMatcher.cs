@@ -17,6 +17,9 @@ namespace NServiceStub.WCF
 
         public bool Matches(object[] arguments)
         {
+            if (arguments.Length != _parameterMatchers.Length)
+                return false;
+
             int index = 0;
             return _parameterMatchers.All(matcher => matcher(arguments[index++]));
         }

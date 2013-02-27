@@ -14,6 +14,16 @@ namespace OrderService
             
         }
 
+        public Date WhenWasOrderLastPlaced()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public OrderStatus GetStatus()
+        {
+            throw new System.NotImplementedException();
+        }
+
         public void ExecuteCommand(Command command)
         {
             

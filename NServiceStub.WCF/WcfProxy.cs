@@ -33,6 +33,7 @@ namespace NServiceStub.WCF
 
             var behaviour = host.Description.Behaviors.Find<ServiceBehaviorAttribute>();
             behaviour.InstanceContextMode = InstanceContextMode.Single;
+            behaviour.IncludeExceptionDetailInFaults = true;
 
             ServiceEndpoint serviceEndpoint = host.AddServiceEndpoint(typeof(T), new BasicHttpBinding(), _httpEndpoint);
 
