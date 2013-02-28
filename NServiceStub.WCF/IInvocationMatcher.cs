@@ -4,7 +4,7 @@ namespace NServiceStub.WCF
 {
     public interface IInvocationMatcher
     {
-        bool Matches(object[] arguments);
+        bool Matches(MethodInfo method, object[] arguments);
 
         MethodInfo InspectedMethod { get; }
     }

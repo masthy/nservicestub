@@ -19,6 +19,11 @@ namespace OrderService
             throw new System.NotImplementedException();
         }
 
+        public bool AreYouHappy()
+        {
+            throw new System.NotImplementedException();
+        }
+
         public OrderStatus GetStatus()
         {
             throw new System.NotImplementedException();

@@ -16,6 +16,9 @@ namespace OrderService.Contracts
         Date WhenWasOrderLastPlaced();
 
         [OperationContract]
+        bool AreYouHappy();
+
+        [OperationContract]
         void ExecuteCommand(Command command);
     }
 }

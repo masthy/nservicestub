@@ -75,6 +75,32 @@ namespace NServiceStub.IntegrationTests.WCF
         }
 
         [Test]
+        public void ExecuteServiceMethod_TwoSetupsWithNoParameters_CorrectMethodIsInvoked()
+        {
+            var service = Configure.Stub().NServiceBusSerializers().WcfEndPoints().Create(@"whatever");
+
+            var proxy = service.WcfEndPoint<IOrderService>("http://localhost:9101/orderservice");
+
+            proxy.Setup(s => s.AreYouHappy()).Returns(() => true);
+            proxy.Setup(s => s.WhenWasOrderLastPlaced()).Returns(() => new Date(2000, 1, 1));
+
+            service.Start();
+
+            Date returnValue;
+
+            using (var factory = new ChannelFactory<IOrderService>(new BasicHttpBinding(), "http://localhost:9101/orderservice"))
+            {
+                IOrderService channel = factory.CreateChannel();
+
+                returnValue = channel.WhenWasOrderLastPlaced();
+            }
+
+            service.Dispose();
+
+            Assert.That(returnValue, Is.EqualTo(new Date(2000, 1, 1)));
+        }
+
+        [Test]
         public void SimpleExpectationSetUp_UsingServiceKnownType_HandledAndMessageIsSentToQueue()
         {
             MsmqHelpers.Purge("shippingservice");

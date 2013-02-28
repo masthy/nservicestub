@@ -15,9 +15,12 @@ namespace NServiceStub.WCF
             _inspectedMethod = inspectedMethod;
         }
 
-        public bool Matches(object[] arguments)
+        public bool Matches(MethodInfo method, object[] arguments)
         {
             if (arguments.Length != _parameterMatchers.Length)
+                return false;
+
+            if (method != InspectedMethod)
                 return false;
 
             int index = 0;

@@ -13,9 +13,9 @@ namespace NServiceStub.WCF
             _sequence = sequence;
         }
 
-        public bool Matches(object[] arguments)
+        public bool Matches(MethodInfo method, object[] arguments)
         {
-            if (_matcher.Matches(arguments))
+            if (_matcher.Matches(method, arguments))
             {
                 _sequence.TriggerNewSequenceOfEvents(new CapturedServiceMethodInvocation(InspectedMethod, arguments));
                 return true;

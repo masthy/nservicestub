@@ -12,7 +12,7 @@ namespace NServiceStub.WCF
         {
             foreach (var matchVsReturnValue in _invocationVersusReturnValue)
             {
-                if (matchVsReturnValue.Key.Matches(invocation.Arguments))
+                if (matchVsReturnValue.Key.Matches(invocation.Method, invocation.Arguments))
                 {
                     invocation.ReturnValue = matchVsReturnValue.Value.Produce(invocation.Arguments);
                     return;
