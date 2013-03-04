@@ -1,16 +1,15 @@
 ﻿using System;
-using System.Net;
 
 namespace NServiceStub.Rest
 {
-    public class ParameterInGetEqualsPredicate<T> : IInvocationMatcher
+    public class ParameterInRouteEqualsPredicate<T> : IInvocationMatcher
     {
         private readonly IRouteTemplate _routeOwningUrl;
         private readonly Func<T, bool> _predicate;
         private readonly ParameterLocation _parameterLocation;
         private readonly string _parameterName;
 
-        public ParameterInGetEqualsPredicate(IRouteTemplate routeOwningUrl, Func<T, bool> predicate, ParameterLocation parameterLocation, string parameterName)
+        public ParameterInRouteEqualsPredicate(IRouteTemplate routeOwningUrl, Func<T, bool> predicate, ParameterLocation parameterLocation, string parameterName)
         {
             _routeOwningUrl = routeOwningUrl;
             _predicate = predicate;

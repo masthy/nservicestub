@@ -1,13 +1,13 @@
 ﻿namespace NServiceStub.Rest
 {
-    public class ParameterInGetEqualsValue<T> : IInvocationMatcher
+    public class ParameterInRouteEqualsValue<T> : IInvocationMatcher
     {
         private readonly IRouteTemplate _routeOwningUrl;
         private readonly T _expectedValue;
         private readonly string _parameterName;
         private readonly ParameterLocation _parameterLocation;
 
-        public ParameterInGetEqualsValue(IRouteTemplate routeOwningUrl, T expectedValue, string parameterName, ParameterLocation parameterLocation)
+        public ParameterInRouteEqualsValue(IRouteTemplate routeOwningUrl, T expectedValue, string parameterName, ParameterLocation parameterLocation)
         {
             _routeOwningUrl = routeOwningUrl;
             _expectedValue = expectedValue;

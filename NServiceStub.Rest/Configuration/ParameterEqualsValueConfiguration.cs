@@ -13,14 +13,10 @@ namespace NServiceStub.Rest.Configuration
             _parameterLocation = parameterLocation;
         }
 
-        IInvocationMatcher IGetInvocationConfiguration.CreateInvocationInspector(IRouteTemplate routeToConfigure)
+        public IInvocationMatcher CreateInvocationInspector(IRouteTemplate routeToConfigure)
         {
-            return new ParameterInGetEqualsValue<T>(routeToConfigure, _expectedValue, _parameterName, _parameterLocation);
+            return new ParameterInRouteEqualsValue<T>(routeToConfigure, _expectedValue, _parameterName, _parameterLocation);
         }
 
-        IInvocationMatcher IPostInvocationConfiguration.CreateInvocationInspector(IRouteTemplate routeToConfigure)
-        {
-            return new ParameterInPostEqualsValue<T>(routeToConfigure, _expectedValue, _parameterName, _parameterLocation);
-        }
     }
 }

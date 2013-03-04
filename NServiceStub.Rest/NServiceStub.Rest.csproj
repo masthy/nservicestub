@@ -80,13 +80,10 @@
     <Compile Include="LogicalOrOfInvocations.cs" />
     <Compile Include="MapRequestToDelegateHeuristic.cs" />
     <Compile Include="Configuration\Parameter.cs" />
-    <Compile Include="ParameterInGetEqualsPredicate.cs" />
-    <Compile Include="ParameterInGetEqualsValue.cs" />
-    <Compile Include="ParameterInPostEqualsPredicate.cs" />
-    <Compile Include="ParameterInPostEqualsValue.cs" />
+    <Compile Include="ParameterInRouteEqualsPredicate.cs" />
+    <Compile Include="ParameterInRouteEqualsValue.cs" />
     <Compile Include="ParameterLocation.cs" />
     <Compile Include="ParameterNameAndLocation.cs" />
-    <Compile Include="PostTemplate.cs" />
     <Compile Include="Configuration\InvokePostConfiguration.cs" />
     <Compile Include="ProduceDelegateReturnValue.cs" />
     <Compile Include="ProduceStaticReturnValue.cs" />
