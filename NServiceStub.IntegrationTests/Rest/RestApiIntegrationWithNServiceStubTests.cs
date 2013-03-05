@@ -82,6 +82,36 @@ namespace NServiceStub.IntegrationTests.Rest
         }
 
         [Test]
+        public void Get_SimpleExpectationSetUpInHeader_HeaderParameterUsableInReturnStatement()
+        {
+            MsmqHelpers.Purge("shippingservice");
+
+            ServiceStub service = Configure.Stub().NServiceBusSerializers().Restful().Create(@".\Private$\orderservice");
+
+            const string BaseUrl = "http://localhost:9101/";
+            RestApi restEndpoint = service.RestEndpoint(BaseUrl);
+
+            IRouteTemplate<SomeTupleReturnValue> get = restEndpoint.AddGet<SomeTupleReturnValue>("/list/{id}");
+
+            restEndpoint.Configure(get).With(Parameter.HeaderParameter<DateTime>("Today").Equals(dt => dt.Day == 3).And(Parameter.RouteParameter<int>("id").Any())).Returns<DateTime, int>((today, id) => new SomeTupleReturnValue{ One = today, Two = id});
+
+            service.Start();
+
+            var client = new HttpClient { BaseAddress = new Uri(BaseUrl) };
+
+            client.DefaultRequestHeaders.Add("Today", new DateTime(2000, 1, 3).ToString());
+
+            Task<string> getAsync = client.GetStringAsync("list/1");
+
+            string result = WaitVerifyNoExceptionsAndGetResult(getAsync);
+
+            client.Dispose();
+            service.Dispose();
+
+            Assert.That(result, Is.EqualTo("{\"One\":\"2000-01-03T00:00:00\",\"Two\":1}"));
+        }
+
+        [Test]
         public void Get_SimpleExpectationSetUpInHeader_HeaderParameterPassedDownTheInheritanceChain()
         {
             MsmqHelpers.Purge("shippingservice");

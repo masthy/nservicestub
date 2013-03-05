@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 
 namespace NServiceStub.Rest
@@ -16,7 +17,7 @@ namespace NServiceStub.Rest
 
         public object Produce(HttpListenerRequest request)
         {
-            return _returnValueProducer.DynamicInvoke(_mapper.Map(request));
+            return _returnValueProducer.DynamicInvoke(_mapper.Map(request).ToArray());
         }
     }
 }
