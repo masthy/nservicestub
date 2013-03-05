@@ -2,7 +2,7 @@
 
 namespace NServiceStub.Rest
 {
-    public interface IRestStubFactory : IExtensionBoundToStubLifecycle, IDisposable
+    public interface IRestApiFactory : IExtensionBoundToStubLifecycle, IDisposable
     {
         RestApi Create(string baseUrl, ServiceStub service);
 

@@ -6,7 +6,7 @@ namespace NServiceStub.Rest.Configuration
     {
          public static RestApi RestEndpoint(this ServiceStub stub, string baseUrl)
          {
-             IRestStubFactory factory = stub.Extensions.OfType<IRestStubFactory>().First();
+             IRestApiFactory factory = stub.Extensions.OfType<IRestApiFactory>().First();
 
              return factory.Create(baseUrl, stub);
          }

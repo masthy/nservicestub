@@ -11,5 +11,18 @@ namespace NServiceStub.IntegrationTests.WCF
         [OperationContract]
         string IHaveMultipleInputParameters(string paramOne, string paramTwo, bool paramThree);
 
+        [OperationContract]
+        FourInputParamsReturnValue IHave4InputParameters(string paramOne, string paramTwo, bool paramThree, string paramFour);
+    }
+
+    public class FourInputParamsReturnValue
+    {
+        public string ReturnOne { get; set; }
+
+        public string ReturnTwo { get; set; }
+
+        public bool ReturnThree { get; set; }
+
+        public string ReturnFour { get; set; }
     }
 }

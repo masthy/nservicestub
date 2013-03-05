@@ -73,7 +73,7 @@
     <Compile Include="Configuration\ReturnFromPostInvocationConfiguration.cs" />
     <Compile Include="IInvocationMatcher.cs" />
     <Compile Include="IInvocationReturnValueProducer.cs" />
-    <Compile Include="IRestStubFactory.cs" />
+    <Compile Include="IRestApiFactory.cs" />
     <Compile Include="IRoute.cs" />
     <Compile Include="IRouteTemplate.cs" />
     <Compile Include="LogicalAndOfInvocations.cs" />

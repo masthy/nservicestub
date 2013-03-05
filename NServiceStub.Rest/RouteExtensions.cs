@@ -20,12 +20,7 @@ namespace NServiceStub.Rest
             switch (parameterLocation)
             {
                 case ParameterLocation.Query:
-                    var getRoute = route as Route;
-
-                    if (getRoute == null)
-                        throw new NotSupportedException("ParameterLocation.Query is only supported for Get routes");
-
-                    return getRoute.GetQueryParameterValue(parameterName, request.RawUrl, expectedType);
+                    return route.GetQueryParameterValue(parameterName, request.RawUrl, expectedType);
                 case ParameterLocation.Route:
                     return route.GetRouteParameterValue(parameterName, request.RawUrl, expectedType);
                 case ParameterLocation.Header:

@@ -15,12 +15,12 @@ namespace NServiceStub.Configuration
 
         public ExpectationConfiguration Expect<T>(Func<T, bool> comparator) where T : class
         {
-            return ConfigurationStepCreator.Create(_componentBeingConfigured, _sequenceBeingConfigured, comparator);
+            return ConfigurationStepCreator.CreateExpectation(_componentBeingConfigured, _sequenceBeingConfigured, comparator);
         }
 
         public SenderConfiguration Send<T>(Action<T> msgInitializer, string destinationQueue) where T : class
         {
-            return ConfigurationStepCreator.Create(_componentBeingConfigured, _sequenceBeingConfigured, msgInitializer, destinationQueue);
+            return ConfigurationStepCreator.CreateSendWithNoBind(_componentBeingConfigured, _sequenceBeingConfigured, msgInitializer, destinationQueue);
         }
 
     }

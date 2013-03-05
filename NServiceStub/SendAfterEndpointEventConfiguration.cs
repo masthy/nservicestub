@@ -18,21 +18,35 @@ namespace NServiceStub
         {
             _componentBeingConfigured.AddSequence(_sequenceBeingConfigured);
 
-            return ConfigurationStepCreator.Create(_componentBeingConfigured, _sequenceBeingConfigured, msgInitializer, destinationQueue);
+            return ConfigurationStepCreator.CreateSendWithNoBind(_componentBeingConfigured, _sequenceBeingConfigured, msgInitializer, destinationQueue);
         }
 
         public SenderConfiguration Send<TMsg, TParam1>(Action<TMsg, TParam1> msgInitializer, string destinationQueue) where TMsg : class
         {
             _componentBeingConfigured.AddSequence(_sequenceBeingConfigured);
 
-            return ConfigurationStepCreator.Create(_componentBeingConfigured, _sequenceBeingConfigured, msgInitializer, destinationQueue);
+            return ConfigurationStepCreator.CreateSendWithBind<TMsg>(_componentBeingConfigured, _sequenceBeingConfigured, msgInitializer, destinationQueue);
         }
 
         public SenderConfiguration Send<TMsg, TParam1, TParam2>(Action<TMsg, TParam1, TParam2> msgInitializer, string destinationQueue) where TMsg : class
         {
             _componentBeingConfigured.AddSequence(_sequenceBeingConfigured);
 
-            return ConfigurationStepCreator.Create(_componentBeingConfigured, _sequenceBeingConfigured, msgInitializer, destinationQueue);
+            return ConfigurationStepCreator.CreateSendWithBind<TMsg>(_componentBeingConfigured, _sequenceBeingConfigured, msgInitializer, destinationQueue);
+        }
+
+        public SenderConfiguration Send<TMsg, TParam1, TParam2, TParam3>(Action<TMsg, TParam1, TParam2, TParam3> msgInitializer, string destinationQueue) where TMsg : class
+        {
+            _componentBeingConfigured.AddSequence(_sequenceBeingConfigured);
+
+            return ConfigurationStepCreator.CreateSendWithBind<TMsg>(_componentBeingConfigured, _sequenceBeingConfigured, msgInitializer, destinationQueue);
+        }
+
+        public SenderConfiguration Send<TMsg, TParam1, TParam2, TParam3, TParam4>(Action<TMsg, TParam1, TParam2, TParam3, TParam4> msgInitializer, string destinationQueue) where TMsg : class
+        {
+            _componentBeingConfigured.AddSequence(_sequenceBeingConfigured);
+
+            return ConfigurationStepCreator.CreateSendWithBind<TMsg>(_componentBeingConfigured, _sequenceBeingConfigured, msgInitializer, destinationQueue);
         }
     }
 }

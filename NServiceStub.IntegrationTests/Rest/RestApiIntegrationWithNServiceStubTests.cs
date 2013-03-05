@@ -383,6 +383,40 @@ namespace NServiceStub.IntegrationTests.Rest
         }
 
         [Test]
+        public void Post_PostWitBodyAndQueryParameters_BodyAndParametersFromRequestAreBound()
+        {
+            // Arrange
+            MsmqHelpers.Purge("shippingservice");
+
+            ServiceStub service = Configure.Stub().NServiceBusSerializers().Restful().Create(@".\Private$\orderservice");
+
+            const string BaseUrl = "http://localhost:9101/";
+            RestApi api = service.RestEndpoint(BaseUrl);
+
+            IRouteTemplate post = api.AddPost("/order?id&size");
+            api.Configure(post).With(Body.AsDynamic().IsEqualTo(body => body.orderId == 1)
+                .And(Parameter.QueryParameter<int>("id").Equals(2))
+                .And(Parameter.QueryParameter<int>("size").Equals(1))).Returns(3);
+
+            service.Start();
+
+            var client = new HttpClient { BaseAddress = new Uri(BaseUrl) };
+
+            Task<HttpResponseMessage> postAsync = client.PostAsync("/order?id=2&size=1", new StringContent("{\"orderId\":\"1\"}", Encoding.UTF8, "application/json"));
+
+            HttpResponseMessage message = WaitVerifyNoExceptionsAndGetResult(postAsync);
+
+            Task<string> readAsStringAsync = message.Content.ReadAsStringAsync();
+            readAsStringAsync.Wait();
+
+            client.Dispose();
+            service.Dispose();
+
+            Assert.That(message.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(readAsStringAsync.Result, Is.EqualTo("3"));
+        }
+
+        [Test]
         public void Post_PostWitBody_BodyIsPassedDownTheChain()
         {
             MsmqHelpers.Purge("shippingservice");

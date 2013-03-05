@@ -27,7 +27,7 @@ namespace NServiceStub.Configuration
             var sequence = new MessageSequence();
             _componentBeingConfigured.AddSequence(sequence);
 
-            return ConfigurationStepCreator.Create(_componentBeingConfigured, sequence, msgInitializer, destinationQueue);
+            return ConfigurationStepCreator.CreateSendWithNoBind(_componentBeingConfigured, sequence, msgInitializer, destinationQueue);
         }
     }
 }

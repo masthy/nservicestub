@@ -215,8 +215,7 @@ namespace NServiceStub.IntegrationTests.WCF
 
             var proxy = service.WcfEndPoint<ISomeService>("http://localhost:9101/something");
 
-            proxy.Setup(s => s.IHaveMultipleInputParameters(Parameter.Any<string>(),
-                Parameter.Equals<string>(str => str == "snappy"), Parameter.Any<bool>())).Returns<string, string, bool>((param1, param2, param3) => param1);
+            proxy.Setup(s => s.IHaveMultipleInputParameters(Parameter.Any<string>(), Parameter.Equals<string>(str => str == "snappy"), Parameter.Any<bool>())).Returns<string, string, bool>((param1, param2, param3) => param1);
 
             service.Start();
 
@@ -231,6 +230,31 @@ namespace NServiceStub.IntegrationTests.WCF
             service.Dispose();
 
             Assert.That(firstRequestReturnValue, Is.EqualTo("hello"));
+        }
+
+        [Test]
+        public void SimpleExpectationSetUp_BindingInputWithMultipleParametersToReturnValue2_InvocationValuesArePassedToReturn()
+        {
+            var service = Configure.Stub().NServiceBusSerializers().WcfEndPoints().Create(@".\Private$\orderservice");
+
+            var proxy = service.WcfEndPoint<ISomeService>("http://localhost:9101/something");
+
+            proxy.Setup(s => s.IHave4InputParameters(Parameter.Any<string>(), Parameter.Equals<string>(str => str == "snappy"), Parameter.Any<bool>(), Parameter.Any<string>())).Returns<string, string, bool, string>((param1, param2, param3, param4) => 
+                new FourInputParamsReturnValue{ReturnOne = param1, ReturnTwo = param2, ReturnThree = param3, ReturnFour = param4});
+
+            service.Start();
+
+            FourInputParamsReturnValue retVal;
+            using (var factory = new ChannelFactory<ISomeService>(new BasicHttpBinding(), "http://localhost:9101/something"))
+            {
+                ISomeService channel = factory.CreateChannel();
+
+                retVal = channel.IHave4InputParameters("hello", "snappy", false, "poppy");
+            }
+
+            service.Dispose();
+
+            Assert.That(retVal.ReturnOne, Is.EqualTo("hello"));
         }
 
         [Test]
@@ -259,7 +283,7 @@ namespace NServiceStub.IntegrationTests.WCF
         }
 
         [Test]
-        public void SimpleExpectationSetUp_BindingInputWithMultipleParametersToReturnValue_InvocationValuesArePassedDownTheChain()
+        public void SimpleExpectationSetUp_BindingInputWithMultipleParametersToReturnValue_InvocationValuesAreAccessibleWhenStubbingMessage()
         {
             MsmqHelpers.Purge("shippingservice");
             var service = Configure.Stub().NServiceBusSerializers().WcfEndPoints().Create(@".\Private$\orderservice");
@@ -283,6 +307,31 @@ namespace NServiceStub.IntegrationTests.WCF
 
             Assert.That(MsmqHelpers.PickMessageBody("shippingservice"), Is.StringContaining("hello"));
             Assert.That(firstRequestReturnValue, Is.EqualTo("hello"));
+        }
+
+        [Test]
+        public void SimpleExpectationSetUp_BindingInputWithMultipleParametersToReturnValue2_InvocationValuesAreAccessibleWhenStubbingMessage()
+        {
+            MsmqHelpers.Purge("shippingservice");
+            var service = Configure.Stub().NServiceBusSerializers().WcfEndPoints().Create(@".\Private$\orderservice");
+
+            var proxy = service.WcfEndPoint<ISomeService>("http://localhost:9101/something");
+
+            proxy.Setup(s => s.IHave4InputParameters(Parameter.Any<string>(), Parameter.Equals<string>(str => str == "snappy"), Parameter.Any<bool>(), Parameter.Any<string>())).Returns(() => new FourInputParamsReturnValue())
+                .Send<IOrderWasPlaced, string, string, bool, string>((msg, param1, param2, param3, param4) => { msg.OrderedProduct = param4; }, "shippingservice");
+
+            service.Start();
+
+            using (var factory = new ChannelFactory<ISomeService>(new BasicHttpBinding(), "http://localhost:9101/something"))
+            {
+                ISomeService channel = factory.CreateChannel();
+
+                channel.IHave4InputParameters("hello", "snappy", false, "bar");
+            }
+
+            service.Dispose();
+
+            Assert.That(MsmqHelpers.PickMessageBody("shippingservice"), Is.StringContaining("bar"));
         }
 
     }
