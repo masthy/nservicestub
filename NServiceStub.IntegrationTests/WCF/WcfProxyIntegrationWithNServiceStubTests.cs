@@ -209,6 +209,54 @@ namespace NServiceStub.IntegrationTests.WCF
         }
 
         [Test]
+        public void VoidServiceMethod_InvokeAndSend_MessageIsSent()
+        {
+            MsmqHelpers.Purge("shippingservice");
+            var service = Configure.Stub().NServiceBusSerializers().WcfEndPoints().Create(@".\Private$\orderservice");
+
+            var proxy = service.WcfEndPoint<ISomeService>("http://localhost:9101/something");
+
+            proxy.Setup(s => s.AVoidServiceMethod()).Send<IOrderWasPlaced>(msg => { msg.OrderedProduct = "abbazz"; }, "shippingservice");
+
+            service.Start();
+
+            using (var factory = new ChannelFactory<ISomeService>(new BasicHttpBinding(), "http://localhost:9101/something"))
+            {
+                ISomeService channel = factory.CreateChannel();
+
+                channel.AVoidServiceMethod();
+            }
+
+            service.Dispose();
+
+            Assert.That(MsmqHelpers.PickMessageBody("shippingservice"), Contains.Substring("abbazz"));
+        }
+
+        [Test]
+        public void SimpleExpectationSetUp_BindingInputToReturnValueByName_InvocationValuesArePassedToReturn()
+        {
+            var service = Configure.Stub().NServiceBusSerializers().WcfEndPoints().Create(@".\Private$\orderservice");
+
+            var proxy = service.WcfEndPoint<ISomeService>("http://localhost:9101/something");
+
+            proxy.Setup(s => s.IHave4InputParameters(Parameter.Any<string>(), Parameter.Any<string>(), Parameter.Any<bool>(), Parameter.Any<string>())).Returns<string>(fallback => new FourInputParamsReturnValue{ ReturnOne = fallback });
+
+            service.Start();
+
+            FourInputParamsReturnValue actual;
+            using (var factory = new ChannelFactory<ISomeService>(new BasicHttpBinding(), "http://localhost:9101/something"))
+            {
+                ISomeService channel = factory.CreateChannel();
+
+                actual = channel.IHave4InputParameters("john doe", "somewhere", false, "to this");
+            }
+
+            service.Dispose();
+
+            Assert.That(actual.ReturnOne, Is.EqualTo("to this"));
+        }
+
+        [Test]
         public void SimpleExpectationSetUp_BindingInputWithMultipleParametersToReturnValue_InvocationValuesArePassedToReturn()
         {
             var service = Configure.Stub().NServiceBusSerializers().WcfEndPoints().Create(@".\Private$\orderservice");

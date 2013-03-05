@@ -9,10 +9,13 @@ namespace NServiceStub.IntegrationTests.WCF
         string PingBack(string stringToPingBack);
 
         [OperationContract]
+        void AVoidServiceMethod();
+
+        [OperationContract]
         string IHaveMultipleInputParameters(string paramOne, string paramTwo, bool paramThree);
 
         [OperationContract]
-        FourInputParamsReturnValue IHave4InputParameters(string paramOne, string paramTwo, bool paramThree, string paramFour);
+        FourInputParamsReturnValue IHave4InputParameters(string name, string address, bool important, string fallback);
     }
 
     public class FourInputParamsReturnValue
