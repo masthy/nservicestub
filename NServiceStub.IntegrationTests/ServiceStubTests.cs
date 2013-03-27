@@ -188,6 +188,25 @@ namespace NServiceStub.IntegrationTests
         }
 
         [Test]
+        public void Start_SendSequeceOfMessagesMultipleTimes_SendsMessages()
+        {
+            // Arrange
+            MsmqHelpers.Purge("shippingservice");
+
+            ServiceStub service = Configure.Stub().NServiceBusSerializers().Create(@".\Private$\orderservice");
+
+            service.Setup()
+                   .Send<IOrderWasPlaced>(msg => msg.OrderedProduct = "stockings", "shippingservice").NumberOfTimes(10)
+                   .Send<IOrderWasPlaced>(msg => msg.OrderedProduct = "stockings", "shippingservice").NumberOfTimes(10);
+            // Act
+            service.Start();
+            StopService(service);
+
+            // Assert
+            Assert.That(MsmqHelpers.GetMessageCount("shippingservice"), Is.EqualTo(20), "shipping service did not recieve send");
+        }
+
+        [Test]
         public void Dispose_DisposingWithNServiceBusSerializer_NoTransientsLyingAround()
         {
             // Arrange

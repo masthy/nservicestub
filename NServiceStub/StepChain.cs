@@ -4,10 +4,6 @@
     {
         private Node _root;
 
-        public StepChain()
-        {
-        }
-
         public void ReplaceStep(IStep stepToReplace, IStep replacement)
         {
             if (_root.Step == stepToReplace)
@@ -22,7 +18,7 @@
                 while (currentStep.Next.Step != stepToReplace)
                     currentStep = currentStep.Next;
 
-                var tmp = new Node(replacement) { Next = currentStep.Next };
+                var tmp = new Node(replacement) { Next = currentStep.Next.Next };
                 currentStep.Next = tmp;
             }
         }
