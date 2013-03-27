@@ -4,3 +4,4 @@ obj
 *.suo
 _Resharper*
 *.DotSettings.user
+deploy.ps1
