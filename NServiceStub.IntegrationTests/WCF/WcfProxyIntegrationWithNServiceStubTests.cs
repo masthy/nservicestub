@@ -382,6 +382,16 @@ namespace NServiceStub.IntegrationTests.WCF
             Assert.That(MsmqHelpers.PickMessageBody("shippingservice"), Is.StringContaining("bar"));
         }
 
+        [Test]
+        public void SpecifyWcfEndpoint_FetchingSameEndpointTwice_GetsSameInstanceBack()
+        {
+            var service = Configure.Stub().NServiceBusSerializers().WcfEndPoints().Create(@".\Private$\orderservice");
+
+            var proxy1 = service.WcfEndPoint<IOrderService>("http://localhost:9101/orderservice");
+            var proxy2 = service.WcfEndPoint<IOrderService>("http://localhost:9101/orderservice");
+
+            Assert.That(proxy1, Is.SameAs(proxy2));
+        }
     }
 
 

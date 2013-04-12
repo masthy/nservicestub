@@ -53,6 +53,7 @@
   <ItemGroup>
     <Compile Include="CapturedServiceMethodInvocation.cs" />
     <Compile Include="Configuration\Bootstrapper.cs" />
+    <Compile Include="OneProxyPrStubScopeAccessor.cs" />
     <Compile Include="ProduceDelegateReturnValue.cs" />
     <Compile Include="IInvocationReturnValueProducer.cs" />
     <Compile Include="IWcfProxyFactory.cs" />

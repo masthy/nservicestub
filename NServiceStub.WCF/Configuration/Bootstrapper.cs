@@ -11,7 +11,7 @@ namespace NServiceStub.WCF.Configuration
         {
             container.Register(Component.For<IWcfProxyFactory>().AsFactory().Forward<IExtensionBoundToStubLifecycle>().LifeStyle.Transient);
             container.Register(Component.For<IExpressionTreeParser>().ImplementedBy<ExpressionTreeParser>());
-            container.Register(Component.For(typeof(WcfProxy<>)).LifeStyle.Transient);
+            container.Register(Component.For(typeof(WcfProxy<>)).LifeStyle.Scoped<OneProxyPrStubScopeAccessor>());
         }
     }
 }

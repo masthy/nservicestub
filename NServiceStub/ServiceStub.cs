@@ -8,6 +8,8 @@ namespace NServiceStub
 {
     public class ServiceStub : IDisposable
     {
+        public event Action<ServiceStub> Disposing = sender => { };
+
         private readonly IIExtensionBoundToStubLifecycleFactory _extensionsFactory;
         private IFactory<IMessagePicker> _messagePickerFactory;
 
@@ -79,6 +81,8 @@ namespace NServiceStub
 
         protected virtual void Dispose(bool disposing)
         {
+            Disposing(this);
+
             if (IsRunning)
                 Stop();
 
