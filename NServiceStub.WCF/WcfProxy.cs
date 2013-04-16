@@ -27,6 +27,8 @@ namespace NServiceStub.WCF
             _host = HostService(_serviceProxy);
         }
 
+        public T Fallback { set { _serviceImplementation.Fallback = value; } }
+
         private ServiceHostBase HostService(T service)
         {
             var host = new ServiceHost(service, new Uri[0]);

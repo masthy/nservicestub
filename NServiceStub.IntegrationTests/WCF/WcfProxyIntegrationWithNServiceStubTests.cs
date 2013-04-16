@@ -1,5 +1,6 @@
 ﻿using System.ServiceModel;
 using System.Threading;
+using Moq;
 using NServiceStub.Configuration;
 using NServiceStub.NServiceBus;
 using NServiceStub.WCF;
@@ -46,6 +47,30 @@ namespace NServiceStub.IntegrationTests.WCF
             Assert.That(firstRequestReturnValue, Is.True);
             Assert.That(secondRequestReturnValue, Is.False);
             Assert.That(MsmqHelpers.GetMessageCount("shippingservice"), Is.EqualTo(1), "shipping service did not recieve send");
+        }
+
+        [Test]
+        public void Fallback_IAlreadyHaveAServiceImplementation_CallingImplementation()
+        {
+            MsmqHelpers.Purge("shippingservice");
+
+            var service = Configure.Stub().NServiceBusSerializers().WcfEndPoints().Create(@".\Private$\orderservice");
+
+            var existingImpl = new Mock<ISomeService>();
+            service.WcfEndPoint("http://localhost:9101/boo", existingImpl.Object);
+
+            service.Start();
+
+            using (var factory = new ChannelFactory<ISomeService>(new BasicHttpBinding(), "http://localhost:9101/boo"))
+            {
+                ISomeService channel = factory.CreateChannel();
+
+                channel.AVoidServiceMethod();
+            }
+
+            service.Dispose();
+
+            existingImpl.Verify(m => m.AVoidServiceMethod());
         }
 
         [Test]

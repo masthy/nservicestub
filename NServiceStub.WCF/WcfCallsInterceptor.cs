@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Castle.DynamicProxy;
 
 namespace NServiceStub.WCF
@@ -7,6 +8,8 @@ namespace NServiceStub.WCF
     public class WcfCallsInterceptor : IInterceptor
     {
         readonly Dictionary<IInvocationMatcher, IInvocationReturnValueProducer> _invocationVersusReturnValue = new Dictionary<IInvocationMatcher, IInvocationReturnValueProducer>();
+
+        public object Fallback { get; set; }
 
         public void Intercept(IInvocation invocation)
         {
@@ -19,12 +22,19 @@ namespace NServiceStub.WCF
                 }
             }
 
-            if (invocation.Method.ReturnType != typeof(void))
+            if (Fallback != null)
             {
-                if (invocation.Method.ReturnType.IsValueType)
-                    invocation.ReturnValue = Activator.CreateInstance(invocation.Method.ReturnType);
-                else
-                    invocation.ReturnValue = null;                    
+                invocation.ReturnValue = invocation.Method.Invoke(Fallback, invocation.Arguments);
+            }
+            else
+            {
+                if (invocation.Method.ReturnType != typeof(void))
+                {
+                    if (invocation.Method.ReturnType.IsValueType)
+                        invocation.ReturnValue = Activator.CreateInstance(invocation.Method.ReturnType);
+                    else
+                        invocation.ReturnValue = null;
+                }
             }
         }
 
