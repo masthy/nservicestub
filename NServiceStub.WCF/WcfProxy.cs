@@ -11,16 +11,16 @@ namespace NServiceStub.WCF
 {
     public class WcfProxy<T> : IDisposable, IWcfProxy where T : class
     {
-        private readonly string _httpEndpoint;
+        private readonly string _endpoint;
         private readonly ServiceStub _service;
         private readonly T _serviceProxy;
         private readonly WcfCallsInterceptor _serviceImplementation = new WcfCallsInterceptor();
         private readonly ServiceHostBase _host;
         private readonly IExpressionTreeParser _parser;
 
-        public WcfProxy(string httpEndpoint, ServiceStub service, IExpressionTreeParser parser)
+        public WcfProxy(string endpoint, ServiceStub service, IExpressionTreeParser parser)
         {
-            _httpEndpoint = httpEndpoint;
+            _endpoint = endpoint;
             _service = service;
             _parser = parser;
             _serviceProxy = CreateServiceImpl(_serviceImplementation);
@@ -37,20 +37,26 @@ namespace NServiceStub.WCF
             behaviour.InstanceContextMode = InstanceContextMode.Single;
             behaviour.IncludeExceptionDetailInFaults = true;
 
-            ServiceEndpoint serviceEndpoint = host.AddServiceEndpoint(typeof(T), new BasicHttpBinding(), _httpEndpoint);
-
-            if (!host.Description.Behaviors.Any(x => x is ServiceMetadataBehavior))
+            if (_endpoint.StartsWith("http", StringComparison.InvariantCultureIgnoreCase))
             {
-                string uriString = serviceEndpoint.Address.Uri.ToString().Replace("localhost", Environment.MachineName);
+                ServiceEndpoint serviceEndpoint = host.AddServiceEndpoint(typeof(T), new BasicHttpBinding(), _endpoint);
 
-                var metadataBehavior = new ServiceMetadataBehavior
+                if (!host.Description.Behaviors.Any(x => x is ServiceMetadataBehavior))
                 {
-                    HttpGetEnabled = true,
-                    HttpGetUrl = new Uri(uriString)
-                };
-                host.Description.Behaviors.Add(metadataBehavior);
-            }
+                    string uriString = serviceEndpoint.Address.Uri.ToString().Replace("localhost", Environment.MachineName);
 
+                    var metadataBehavior = new ServiceMetadataBehavior
+                    {
+                        HttpGetEnabled = true,
+                        HttpGetUrl = new Uri(uriString)
+                    };
+                    host.Description.Behaviors.Add(metadataBehavior);
+                }
+            }
+            else
+            {
+                host.AddServiceEndpoint(typeof(T), new NetTcpBinding(), _endpoint);                
+            }
 
             host.Open();
             return host;

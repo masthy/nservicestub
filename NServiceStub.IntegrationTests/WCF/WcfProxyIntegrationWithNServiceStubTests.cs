@@ -50,6 +50,28 @@ namespace NServiceStub.IntegrationTests.WCF
         }
 
         [Test]
+        public void TcpBinding_UsingTcpBindingToConnect_CanConnectSuccessfully()
+        {
+            var service = Configure.Stub().NServiceBusSerializers().WcfEndPoints().Create(@".\Private$\orderservice");
+
+            var proxy = service.WcfEndPoint<IOrderService>("net.tcp://localhost:9101/orderservice");
+
+            proxy.Setup(s => s.PlaceOrder(Parameter.Equals<string>(str => str == "dope"))).Returns(() => true)
+                    .Send<IOrderWasPlaced>(msg => msg.OrderedProduct = "stockings", "shippingservice");
+
+            service.Start();
+
+            using (var factory = new ChannelFactory<IOrderService>(new NetTcpBinding(), "net.tcp://localhost:9101/orderservice"))
+            {
+                IOrderService channel = factory.CreateChannel();
+
+                channel.PlaceOrder("bar");
+            }
+
+            service.Dispose();
+        }
+
+        [Test]
         public void Fallback_IAlreadyHaveAServiceImplementation_CallingImplementation()
         {
             MsmqHelpers.Purge("shippingservice");
@@ -414,6 +436,8 @@ namespace NServiceStub.IntegrationTests.WCF
 
             var proxy1 = service.WcfEndPoint<IOrderService>("http://localhost:9101/orderservice");
             var proxy2 = service.WcfEndPoint<IOrderService>("http://localhost:9101/orderservice");
+
+            service.Dispose();
 
             Assert.That(proxy1, Is.SameAs(proxy2));
         }

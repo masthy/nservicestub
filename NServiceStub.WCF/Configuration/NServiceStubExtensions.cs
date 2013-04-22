@@ -4,16 +4,16 @@ namespace NServiceStub.WCF.Configuration
 {
     public static class NServiceStubExtensions
     {
-         public static WcfProxy<T> WcfEndPoint<T>(this ServiceStub stub, string httpEndpoint) where T : class
+         public static WcfProxy<T> WcfEndPoint<T>(this ServiceStub stub, string endpoint) where T : class
          {
              IWcfProxyFactory wcfProxyFactory = stub.Extensions.OfType<IWcfProxyFactory>().First();
 
-             return wcfProxyFactory.Create<T>(httpEndpoint, stub);
+             return wcfProxyFactory.Create<T>(endpoint, stub);
          }
 
-        public static WcfProxy<T> WcfEndPoint<T>(this ServiceStub stub, string httpEndpoint, T fallback) where T : class
+        public static WcfProxy<T> WcfEndPoint<T>(this ServiceStub stub, string endpoint, T fallback) where T : class
         {
-            WcfProxy<T> proxy = stub.WcfEndPoint<T>(httpEndpoint);
+            WcfProxy<T> proxy = stub.WcfEndPoint<T>(endpoint);
             proxy.Fallback = fallback;
             return proxy;
         }
