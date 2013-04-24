@@ -74,6 +74,7 @@
     <Compile Include="ServiceStubTests.cs" />
     <Compile Include="TriggeredMessageSequenceTests.cs" />
     <Compile Include="WCF\ISomeService.cs" />
+    <Compile Include="WCF\ISomeServiceConfiguredInAppConfig.cs" />
     <Compile Include="WCF\WcfProxyIntegrationWithNServiceStubTests.cs" />
   </ItemGroup>
   <ItemGroup>

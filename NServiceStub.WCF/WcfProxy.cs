@@ -53,10 +53,8 @@ namespace NServiceStub.WCF
                     host.Description.Behaviors.Add(metadataBehavior);
                 }
             }
-            else
-            {
-                host.AddServiceEndpoint(typeof(T), new NetTcpBinding(), _endpoint);                
-            }
+            else if (!String.IsNullOrEmpty(_endpoint))
+                host.AddServiceEndpoint(typeof(T), new NetTcpBinding(), _endpoint);
 
             host.Open();
             return host;
@@ -64,7 +62,9 @@ namespace NServiceStub.WCF
 
         private static T CreateServiceImpl(IInterceptor interceptor)
         {
-            var generator = new ProxyGenerator();
+            var serviceNamer = new ProxyNamer(new NamingScope(), typeof(T));
+            var generator = new ProxyGenerator(new DefaultProxyBuilder(new ModuleScope(false, false, serviceNamer, ModuleScope.DEFAULT_ASSEMBLY_NAME, ModuleScope.DEFAULT_FILE_NAME, ModuleScope.DEFAULT_ASSEMBLY_NAME, ModuleScope.DEFAULT_FILE_NAME)));
+
             AttributesToAvoidReplicating.Add<ServiceContractAttribute>();
             AttributesToAvoidReplicating.Add<OperationContractAttribute>();
 

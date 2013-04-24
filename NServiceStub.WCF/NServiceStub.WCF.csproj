@@ -71,6 +71,7 @@
     <Compile Include="Configuration\MethodReturnsSetup.cs" />
     <Compile Include="Parameter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ProxyNamer.cs" />
     <Compile Include="WcfCallsInterceptor.cs" />
     <Compile Include="WcfProxy.cs" />
   </ItemGroup>

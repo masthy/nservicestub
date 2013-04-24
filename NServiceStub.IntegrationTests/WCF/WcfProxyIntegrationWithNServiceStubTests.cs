@@ -54,10 +54,7 @@ namespace NServiceStub.IntegrationTests.WCF
         {
             var service = Configure.Stub().NServiceBusSerializers().WcfEndPoints().Create(@".\Private$\orderservice");
 
-            var proxy = service.WcfEndPoint<IOrderService>("net.tcp://localhost:9101/orderservice");
-
-            proxy.Setup(s => s.PlaceOrder(Parameter.Equals<string>(str => str == "dope"))).Returns(() => true)
-                    .Send<IOrderWasPlaced>(msg => msg.OrderedProduct = "stockings", "shippingservice");
+            service.WcfEndPoint<IOrderService>("net.tcp://localhost:9101/orderservice");
 
             service.Start();
 
@@ -66,6 +63,26 @@ namespace NServiceStub.IntegrationTests.WCF
                 IOrderService channel = factory.CreateChannel();
 
                 channel.PlaceOrder("bar");
+            }
+
+            service.Dispose();
+        }
+
+        [Test]
+        public void NoBindingSpecified_UsingBindingInConfigurationFile_CanConnectSuccessfully()
+        {
+            var service = Configure.Stub().NServiceBusSerializers().WcfEndPoints().Create(@".\Private$\orderservice");
+
+            service.WcfEndPoint<ISomeServiceConfiguredInAppConfig>();
+
+            service.Start();
+
+            var netTcpBinding = new NetTcpBinding {Security = {Mode = SecurityMode.None}};
+            using (var factory = new ChannelFactory<ISomeServiceConfiguredInAppConfig>(netTcpBinding, "net.tcp://localhost:9102/someservice"))
+            {
+                ISomeServiceConfiguredInAppConfig channel = factory.CreateChannel();
+
+                channel.Hello();
             }
 
             service.Dispose();
