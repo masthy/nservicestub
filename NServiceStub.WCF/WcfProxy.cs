@@ -84,6 +84,12 @@ namespace NServiceStub.WCF
             return new SendAfterEndpointEventConfiguration(sequence, _service);
         }
 
+        public MethodVoidSetup When(Expression<Action<T>> methodSignatureExpectation)
+        {
+            IInvocationMatcher invocationMatcher = _parser.Parse(methodSignatureExpectation);
+            return new MethodVoidSetup(this, _service, invocationMatcher, _parser.GetInvokedMethod(methodSignatureExpectation));   
+        }
+
         public MethodReturnsSetup<R> Setup<R>(Expression<Func<T, R>> methodSignatureExpectation)
         {
             IInvocationMatcher invocationMatcher = _parser.Parse(methodSignatureExpectation);
@@ -94,6 +100,11 @@ namespace NServiceStub.WCF
         public void Dispose()
         {
             _host.Close();
+        }
+
+        void IWcfProxy.AddInvocation(IInvocationMatcher matcher, IInvocationVoidCaller voidCaller)
+        {
+            _serviceImplementation.AddInvocation(matcher, voidCaller);
         }
 
         void IWcfProxy.AddInvocation(IInvocationMatcher matcher, IInvocationReturnValueProducer returnValueProducer)

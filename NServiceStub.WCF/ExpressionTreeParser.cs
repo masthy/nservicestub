@@ -27,6 +27,12 @@ namespace NServiceStub.WCF
             return serviceMethod.Method;
         }
 
+        public MethodInfo GetInvokedMethod<T>(Expression<Action<T>> methodSignatureExpectation)
+        {
+            var serviceMethod = methodSignatureExpectation.Body as MethodCallExpression;
+            return serviceMethod.Method;
+        }
+
         private static IInvocationMatcher ParseInternal(MethodCallExpression serviceMethod)
         {
             var matchers = new List<Func<object, bool>>();

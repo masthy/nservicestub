@@ -12,5 +12,7 @@ namespace NServiceStub.WCF
 
         MethodInfo GetInvokedMethod<T,R>(Expression<Func<T, R>> methodSignatureExpectation);
 
+        MethodInfo GetInvokedMethod<T>(Expression<Action<T>> methodSignatureExpectation);
+
     }
 }

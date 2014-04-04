@@ -3,6 +3,51 @@ using System.Reflection;
 
 namespace NServiceStub.WCF.Configuration
 {
+    public class MethodVoidSetup
+    {
+        private IWcfProxy _wcfProxy;
+        private ServiceStub _service;
+        private IInvocationMatcher _invocationMatcher;
+        private MethodInfo _serviceMethod;
+
+        public MethodVoidSetup(IWcfProxy wcfProxy, ServiceStub service, IInvocationMatcher invocationMatcher, MethodInfo serviceMethod)
+        {
+            _wcfProxy = wcfProxy;
+            _service = service;
+            _invocationMatcher = invocationMatcher;
+            _serviceMethod = serviceMethod;
+        }
+
+        public SendAfterEndpointEventConfiguration Calls(Action action)
+        {
+            return CallsInternal(new VoidDelegate(action, _serviceMethod));
+        }
+
+        public SendAfterEndpointEventConfiguration Calls<T>(Action<T> action)
+        {
+            return CallsInternal(new VoidDelegate(action, _serviceMethod));
+        }
+        public SendAfterEndpointEventConfiguration Calls<T1, T2>(Action<T1, T2> action)
+        {
+            return CallsInternal(new VoidDelegate(action, _serviceMethod));
+        }
+        public SendAfterEndpointEventConfiguration Calls<T1, T2, T3>(Action<T1, T2, T3> action)
+        {
+            return CallsInternal(new VoidDelegate(action, _serviceMethod));
+        }
+
+
+        private SendAfterEndpointEventConfiguration CallsInternal(VoidDelegate voidDelegate)
+        {
+            var sequence = new TriggeredMessageSequence();
+            var trigger = new InvocationTriggeringSequenceOfEvents(_invocationMatcher, sequence);
+
+            _wcfProxy.AddInvocation(trigger, voidDelegate);
+
+            return new SendAfterEndpointEventConfiguration(sequence, _service);
+        }
+    }
+
     public class MethodReturnsSetup<R>
     {
         private readonly IWcfProxy _wcfProxy;

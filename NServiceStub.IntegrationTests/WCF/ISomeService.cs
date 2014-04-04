@@ -12,6 +12,9 @@ namespace NServiceStub.IntegrationTests.WCF
         void AVoidServiceMethod();
 
         [OperationContract]
+        void AVoidServiceMethodWithArguments(string s);
+
+        [OperationContract]
         string IHaveMultipleInputParameters(string paramOne, string paramTwo, bool paramThree);
 
         [OperationContract]
