@@ -10,7 +10,7 @@ using OrderService.Contracts;
 
 namespace OrderService
 {
-    public class WcfApiEndpointStarter : IWantToRunAtStartup
+    public class WcfApiEndpointStarter : IWantToRunWhenBusStartsAndStops
     {
         private ServiceHostBase _wcfEndPoint;
 
@@ -23,7 +23,7 @@ namespace OrderService
             _container.Register(Component.For<IOrderService>().ImplementedBy<OrderService>());
         }
 
-        public void Run()
+        public void Start()
         {
             _wcfEndPoint = CreateAndOpenWCFHost(typeof(IOrderService).AssemblyQualifiedName);
         }

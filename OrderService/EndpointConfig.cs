@@ -1,6 +1,7 @@
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using NServiceBus;
+using NServiceBus.Features;
 
 namespace OrderService 
 {
@@ -15,10 +16,11 @@ namespace OrderService
             var container = new WindsorContainer();
             container.Register(Component.For<IWindsorContainer>().Instance(container));
 
+            Configure.Features.Disable<Audit>();
+            Configure.Serialization.Xml();
             Configure.With()
                 .CastleWindsorBuilder(container)
-                .XmlSerializer()
-                .MsmqTransport()
+                .UseTransport<Msmq>()
                 .RavenSubscriptionStorage()
                 .UnicastBus()
                 .CreateBus()

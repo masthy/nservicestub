@@ -15,17 +15,15 @@ namespace NServiceStub.IntegrationTests.NServiceBus
             // Arrange
             object[] message;
 
-            using (var bus = InternalBusCreator.CreateBus())
-            {
-                var picker = new MessagePicker(bus);
-                var stuffer = new MessageStuffer(bus);
+            var bus = InternalBusCreator.CreateBus();
 
-                stuffer.PutMessageOnQueue<IPlaceAnOrder>(msg => { msg.Product = "a"; }, "orderservice");
+            var picker = new MessagePicker(bus);
+            var stuffer = new MessageStuffer(bus);
 
-                // Act
-                message = picker.PickMessage(@".\Private$\orderservice");
-            }
+            stuffer.PutMessageOnQueue<IPlaceAnOrder>(msg => { msg.Product = "a"; }, "orderservice");
 
+            // Act
+            message = picker.PickMessage(@".\Private$\orderservice");
 
             // Assert
             Assert.That(message.Length, Is.EqualTo(1));
