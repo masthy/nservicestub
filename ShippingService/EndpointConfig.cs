@@ -1,4 +1,5 @@
 using NServiceBus;
+using NServiceBus.Features;
 
 namespace ShippingService 
 {
@@ -10,10 +11,11 @@ namespace ShippingService
     {
         public void Init()
         {
+            Configure.Serialization.Xml();
+            Configure.Features.Disable<Audit>();
             Configure.With()
                 .CastleWindsorBuilder()
-                .XmlSerializer()
-                .MsmqTransport()
+                .UseTransport<Msmq>()
                 .RavenSubscriptionStorage()
                 .UnicastBus()
                 .CreateBus()

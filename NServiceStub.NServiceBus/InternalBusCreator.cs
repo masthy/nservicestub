@@ -1,4 +1,7 @@
-﻿using NServiceBus;
+﻿using System.Runtime.InteropServices;
+using NServiceBus;
+using NServiceBus.Features;
+using NServiceBus.Settings;
 using NServiceBus.Unicast;
 
 namespace NServiceStub.NServiceBus
@@ -7,13 +10,17 @@ namespace NServiceStub.NServiceBus
     {
         public static UnicastBus CreateBus()
         {
+            SettingsHolder.Reset();
+            Configure.Serialization.Xml();
+            Configure.Features.Disable<SecondLevelRetries>();
+            Configure.Features.Disable<Audit>();
+            Configure.Transactions.Disable();
+            Configure.Transactions.Advanced(s => s.DisableDistributedTransactions());
+
             IBus bus = Configure.With().DefineEndpointName("nservicestub")
                 .Log4Net()
                 .DefaultBuilder()
-                .XmlSerializer()
-                .MsmqTransport()
-                .DisableSecondLevelRetries()
-                .IsTransactional(false)
+                .UseTransport<Msmq>()
                 .PurgeOnStartup(false)
                 .UnicastBus()
                 .ImpersonateSender(false)
