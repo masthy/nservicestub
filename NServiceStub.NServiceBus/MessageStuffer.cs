@@ -1,27 +1,29 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using NServiceBus;
+using NServiceBus.MessageInterfaces;
 using NServiceBus.Serialization;
+using NServiceBus.Transports;
 using NServiceBus.Unicast;
-using NServiceBus.Unicast.Transport;
 
 namespace NServiceStub.NServiceBus
 {
     public class MessageStuffer : IMessageStuffer
     {
-        private readonly UnicastBus _busUsedToSerializeMessages;
         private readonly IMessageSerializer _messageSerializer;
+        private readonly ISendMessages _messageSender;
+        private readonly IMessageMapper _messageMapper;
 
-        public MessageStuffer(UnicastBus busUsedToSerializeMessages)
+        public MessageStuffer(UnicastBus bus)
         {
-            _busUsedToSerializeMessages = busUsedToSerializeMessages;
-            _messageSerializer = busUsedToSerializeMessages.Builder.Build<IMessageSerializer>();
+            _messageSerializer = bus.Builder.Build<IMessageSerializer>();
+            _messageSender = bus.Builder.Build<ISendMessages>();
+            _messageMapper = bus.Builder.Build<IMessageMapper>();
         }
 
         public void PutMessageOnQueue<T>(Action<T> messageInitializer, string destinationQueue)
         {
-            PutMessageOnQueue(_busUsedToSerializeMessages.MessageMapper.CreateInstance(messageInitializer), destinationQueue);
+            PutMessageOnQueue(_messageMapper.CreateInstance(messageInitializer), destinationQueue);
         }
 
         public void PutMessageOnQueue(object msg, string destinationQueue)
@@ -32,18 +34,16 @@ namespace NServiceStub.NServiceBus
                     CorrelationId = null,
                     MessageIntent = MessageIntentEnum.Send
                 };
-            MapTransportMessageFor(_busUsedToSerializeMessages, new[] { msg }, transportMessage);
-            _busUsedToSerializeMessages.MessageSender.Send(transportMessage, address);
+            MapTransportMessageFor(msg, transportMessage);
+            
+            _messageSender.Send(transportMessage, new SendOptions(address));
         }
 
-        private void MapTransportMessageFor(UnicastBus bus, object[] rawMessages, TransportMessage result)
+        private void MapTransportMessageFor(object message, TransportMessage result)
         {
-            result.ReplyToAddress = Address.Local;
-            object[] messages = rawMessages;
             var memoryStream = new MemoryStream();
-            _messageSerializer.Serialize(messages, memoryStream);
+            _messageSerializer.Serialize(message, memoryStream);
             result.Body = memoryStream.ToArray();
-            result.ReplyToAddress = Address.Local;
             result.TimeToBeReceived = TimeSpan.MaxValue;
         }
 

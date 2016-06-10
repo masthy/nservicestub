@@ -7,19 +7,18 @@ namespace ShippingService
 		This class configures this endpoint as a Server. More information about how to configure the NServiceBus host
 		can be found here: http://nservicebus.com/GenericHost.aspx
 	*/
-	public class EndpointConfig : IConfigureThisEndpoint, IWantCustomInitialization, AsA_Server
+	public class EndpointConfig : IConfigureThisEndpoint, AsA_Server
     {
-        public void Init()
+        public void Customize(BusConfiguration configuration)
         {
-            Configure.Serialization.Xml();
-            Configure.Features.Disable<Audit>();
-            Configure.With()
-                .CastleWindsorBuilder()
-                .UseTransport<Msmq>()
-                .RavenSubscriptionStorage()
-                .UnicastBus()
-                .CreateBus()
-                .Start();
+            configuration.UseContainer<WindsorBuilder>();
+
+            configuration.UseSerialization<XmlSerializer>();
+            configuration.UseTransport<MsmqTransport>();
+
+            configuration.DisableFeature<Audit>();
+
+            configuration.UsePersistence<InMemoryPersistence>();
         }
     }
 }

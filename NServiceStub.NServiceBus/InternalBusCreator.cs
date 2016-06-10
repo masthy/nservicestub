@@ -1,32 +1,26 @@
-﻿using System.Runtime.InteropServices;
-using NServiceBus;
+﻿using NServiceBus;
 using NServiceBus.Features;
-using NServiceBus.Settings;
 using NServiceBus.Unicast;
 
 namespace NServiceStub.NServiceBus
 {
-    public class InternalBusCreator
+    public static class InternalBusCreator
     {
         public static UnicastBus CreateBus()
         {
-            SettingsHolder.Reset();
-            Configure.Serialization.Xml();
-            Configure.Features.Disable<SecondLevelRetries>();
-            Configure.Features.Disable<Audit>();
-            Configure.Transactions.Disable();
-            Configure.Transactions.Advanced(s => s.DisableDistributedTransactions());
+            var configuration = new BusConfiguration();
 
-            IBus bus = Configure.With().DefineEndpointName("nservicestub")
-                .Log4Net()
-                .DefaultBuilder()
-                .UseTransport<Msmq>()
-                .PurgeOnStartup(false)
-                .UnicastBus()
-                .ImpersonateSender(false)
-                .SendOnly();
+            configuration.UseSerialization<XmlSerializer>();
+            configuration.DisableFeature<SecondLevelRetries>();
+            configuration.DisableFeature<Audit>();
+            configuration.UsePersistence<InMemoryPersistence>();
+            configuration.Transactions()
+                .DisableDistributedTransactions()
+                .Disable();
 
-            return bus as UnicastBus;
+            configuration.EndpointName("nservicestub");
+
+            return (UnicastBus) Bus.Create(configuration).Start();
         }
     }
 }
