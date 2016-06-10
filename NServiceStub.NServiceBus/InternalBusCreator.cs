@@ -1,4 +1,6 @@
 ﻿using NServiceBus;
+using NServiceBus.Config;
+using NServiceBus.Config.ConfigurationSource;
 using NServiceBus.Features;
 using NServiceBus.Unicast;
 
@@ -14,13 +16,24 @@ namespace NServiceStub.NServiceBus
             configuration.DisableFeature<SecondLevelRetries>();
             configuration.DisableFeature<Audit>();
             configuration.UsePersistence<InMemoryPersistence>();
-            configuration.Transactions()
+            configuration.Transactions( )
                 .DisableDistributedTransactions()
                 .Disable();
 
             configuration.EndpointName("nservicestub");
 
             return (UnicastBus) Bus.Create(configuration).Start();
+        }
+    }
+
+    public class ProvideConfiguration : IProvideConfiguration<MessageForwardingInCaseOfFaultConfig>
+    {
+        public MessageForwardingInCaseOfFaultConfig GetConfiguration()
+        {
+            return new MessageForwardingInCaseOfFaultConfig
+            {
+                ErrorQueue = "error"
+            };
         }
     }
 }
